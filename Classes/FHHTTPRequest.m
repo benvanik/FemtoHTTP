@@ -70,8 +70,6 @@
     FHRELEASE( headers );
     FHRELEASE( content );
     FHRELEASE( proxy );
-    FHRELEASE( proxyUserName );
-    FHRELEASE( proxyPassword );
     [super dealloc];
 }
 
