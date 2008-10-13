@@ -1,0 +1,23 @@
+//
+// Prefix header for all source files of the 'FemtoHTTP' target in the 'FemtoHTTP' project.
+//
+
+#ifdef __OBJC__
+#import <Foundation/Foundation.h>
+#endif
+
+#import <libkern/OSAtomic.h>
+
+#import "FHConfig.h"
+#import "FHErrorCodes.h"
+#import "FHConstants.h"
+
+#define FHRELEASE( ptr ) { if( ptr ){ id __ptrx = ptr; ptr = nil; [__ptrx release]; } }
+
+#define FHLOGERROR( code, fmt, ... ) NSLog( @"FemtoHTTP[%@:%d]: error %@ (%@:%d) - %@", [[NSString stringWithUTF8String:__FILE__] lastPathComponent], __LINE__, FHErrorGetName( code ), FHErrorGetDomainName( FHErrorGetDomain( code ) ), code, [NSString stringWithFormat:fmt, ##__VA_ARGS__] )
+
+#if defined( FH_DEBUG_OUTPUT )
+#define FHLOG( fmt, ... ) NSLog( @"FemtoHTTP[%@:%d]: %@", [[NSString stringWithUTF8String:__FILE__] lastPathComponent], __LINE__, [NSString stringWithFormat:fmt, ##__VA_ARGS__] )
+#else
+#define FHLOG( fmt, ... )
+#endif
