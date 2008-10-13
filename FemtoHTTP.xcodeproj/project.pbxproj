@@ -55,6 +55,11 @@
 		9006BFC00EA341F3007D462D /* ResponseTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9006BFBF0EA341F3007D462D /* ResponseTests.m */; };
 		9006BFC30EA341FB007D462D /* HTTPTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9006BFC20EA341FB007D462D /* HTTPTests.m */; };
 		9006BFD80EA3433C007D462D /* FemtoHTTP.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8DC2EF5B0486A6940098B216 /* FemtoHTTP.framework */; };
+		9006C7F10EA3B636007D462D /* FHHTTPCookie.h in Headers */ = {isa = PBXBuildFile; fileRef = 9006C7EF0EA3B636007D462D /* FHHTTPCookie.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9006C7F20EA3B636007D462D /* FHHTTPCookie.m in Sources */ = {isa = PBXBuildFile; fileRef = 9006C7F00EA3B636007D462D /* FHHTTPCookie.m */; };
+		9006C7F30EA3B636007D462D /* FHHTTPCookie.h in Headers */ = {isa = PBXBuildFile; fileRef = 9006C7EF0EA3B636007D462D /* FHHTTPCookie.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9006C7F40EA3B636007D462D /* FHHTTPCookie.m in Sources */ = {isa = PBXBuildFile; fileRef = 9006C7F00EA3B636007D462D /* FHHTTPCookie.m */; };
+		9006C8FC0EA3C645007D462D /* CookieTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9006C8FB0EA3C645007D462D /* CookieTests.m */; };
 		900E0B700EA2B54000409EF8 /* FHHTTPResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = 900E0B6E0EA2B54000409EF8 /* FHHTTPResponse.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		900E0B710EA2B54000409EF8 /* FHHTTPResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 900E0B6F0EA2B54000409EF8 /* FHHTTPResponse.m */; };
 		900E0B720EA2B54000409EF8 /* FHHTTPResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = 900E0B6E0EA2B54000409EF8 /* FHHTTPResponse.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -115,6 +120,10 @@
 		9006BFC10EA341FB007D462D /* HTTPTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HTTPTests.h; path = Tests/HTTPTests.h; sourceTree = "<group>"; };
 		9006BFC20EA341FB007D462D /* HTTPTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HTTPTests.m; path = Tests/HTTPTests.m; sourceTree = "<group>"; };
 		9006C17A0EA35360007D462D /* doxygen.config */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = doxygen.config; path = Documentation/doxygen.config; sourceTree = "<group>"; };
+		9006C7EF0EA3B636007D462D /* FHHTTPCookie.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FHHTTPCookie.h; path = Classes/FHHTTPCookie.h; sourceTree = "<group>"; };
+		9006C7F00EA3B636007D462D /* FHHTTPCookie.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FHHTTPCookie.m; path = Classes/FHHTTPCookie.m; sourceTree = "<group>"; };
+		9006C8FA0EA3C645007D462D /* CookieTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CookieTests.h; path = Tests/CookieTests.h; sourceTree = "<group>"; };
+		9006C8FB0EA3C645007D462D /* CookieTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CookieTests.m; path = Tests/CookieTests.m; sourceTree = "<group>"; };
 		900E0B640EA2B4A900409EF8 /* libFemtoHTTP.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFemtoHTTP.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		900E0B6E0EA2B54000409EF8 /* FHHTTPResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FHHTTPResponse.h; path = Classes/FHHTTPResponse.h; sourceTree = "<group>"; };
 		900E0B6F0EA2B54000409EF8 /* FHHTTPResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FHHTTPResponse.m; path = Classes/FHHTTPResponse.m; sourceTree = "<group>"; };
@@ -201,6 +210,8 @@
 				9006BB660EA2CAA1007D462D /* Sockets */,
 				900E0B7A0EA2B56800409EF8 /* FHHTTPConnection.h */,
 				900E0B7B0EA2B56800409EF8 /* FHHTTPConnection.m */,
+				9006C7EF0EA3B636007D462D /* FHHTTPCookie.h */,
+				9006C7F00EA3B636007D462D /* FHHTTPCookie.m */,
 				900E0B740EA2B55400409EF8 /* FHHTTPRequest.h */,
 				9006BE120EA30FBA007D462D /* FHHTTPRequest+Implementation.h */,
 				900E0B750EA2B55400409EF8 /* FHHTTPRequest.m */,
@@ -270,6 +281,8 @@
 				9006BFBF0EA341F3007D462D /* ResponseTests.m */,
 				9006BFC10EA341FB007D462D /* HTTPTests.h */,
 				9006BFC20EA341FB007D462D /* HTTPTests.m */,
+				9006C8FA0EA3C645007D462D /* CookieTests.h */,
+				9006C8FB0EA3C645007D462D /* CookieTests.m */,
 			);
 			name = "Test Cases";
 			sourceTree = "<group>";
@@ -293,6 +306,7 @@
 				9006BB690EA2CAB3007D462D /* FHHostEntry.h in Headers */,
 				9006BDDF0EA30ECC007D462D /* FHConstants.h in Headers */,
 				9006BE140EA30FBA007D462D /* FHHTTPRequest+Implementation.h in Headers */,
+				9006C7F10EA3B636007D462D /* FHHTTPCookie.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -312,6 +326,7 @@
 				9006BB6B0EA2CAB3007D462D /* FHHostEntry.h in Headers */,
 				9006BDE10EA30ECC007D462D /* FHConstants.h in Headers */,
 				9006BE160EA30FBA007D462D /* FHHTTPRequest+Implementation.h in Headers */,
+				9006C7F30EA3B636007D462D /* FHHTTPCookie.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -454,6 +469,7 @@
 				9006BB470EA2C4BE007D462D /* FHTCPSocket.m in Sources */,
 				9006BB6A0EA2CAB3007D462D /* FHHostEntry.m in Sources */,
 				9006BDE00EA30ECC007D462D /* FHConstants.m in Sources */,
+				9006C7F20EA3B636007D462D /* FHHTTPCookie.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -466,6 +482,7 @@
 				9006BFBD0EA341EB007D462D /* RequestTests.m in Sources */,
 				9006BFC00EA341F3007D462D /* ResponseTests.m in Sources */,
 				9006BFC30EA341FB007D462D /* HTTPTests.m in Sources */,
+				9006C8FC0EA3C645007D462D /* CookieTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -481,6 +498,7 @@
 				9006BB490EA2C4BE007D462D /* FHTCPSocket.m in Sources */,
 				9006BB6C0EA2CAB3007D462D /* FHHostEntry.m in Sources */,
 				9006BDE20EA30ECC007D462D /* FHConstants.m in Sources */,
+				9006C7F40EA3B636007D462D /* FHHTTPCookie.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

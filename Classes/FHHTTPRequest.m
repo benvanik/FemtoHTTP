@@ -8,6 +8,7 @@
 
 #import "FHHTTPRequest.h"
 #import "FHHTTPRequest+Implementation.h"
+#import "FHHTTPCookie.h"
 
 @implementation FHHTTPRequest
 
@@ -15,6 +16,7 @@
 @synthesize url;
 @synthesize method;
 @synthesize headers;
+@synthesize cookies;
 @synthesize content;
 @dynamic contentAsString;
 
@@ -35,6 +37,7 @@
         url = nil;
         method = [FHHTTPMethodGet retain];
         headers = [[NSMutableDictionary alloc] init];
+        cookies = [[NSMutableArray alloc] init];
         content = nil;
         
         singleUse = NO;
@@ -68,6 +71,7 @@
     FHRELEASE( url );
     FHRELEASE( method );
     FHRELEASE( headers );
+    FHRELEASE( cookies );
     FHRELEASE( content );
     FHRELEASE( proxy );
     [super dealloc];
@@ -119,6 +123,39 @@
 }
 
 #pragma mark -
+#pragma mark Cookies
+
+- (void) addCookies:(NSArray*)newCookies
+{
+    [cookies addObjectsFromArray:newCookies];
+}
+
+- (void) addCookie:(FHHTTPCookie*)cookie
+{
+    [cookies addObject:cookie];
+}
+
+- (FHHTTPCookie*) cookieWithName:(NSString*)name
+{
+    for( FHHTTPCookie* cookie in cookies )
+    {
+        if( [[cookie name] isEqualToString:name] == YES )
+            return cookie;
+    }
+    return nil;
+}
+
+- (void) removeCookie:(FHHTTPCookie*)cookie
+{
+    [cookies removeObject:cookie];
+}
+
+- (void) removeAllCookies
+{
+    [cookies removeAllObjects];
+}
+
+#pragma mark -
 #pragma mark Header Accessors
 
 - (NSString*) referer
@@ -151,7 +188,7 @@
 {
     NSString* value = [headers objectForKey:@"If-Modified-Since"];
     if( value != nil )
-        return [dateFormatter dateFromString:value];
+        return [dateFormatter dateFromString:[value stringByReplacingOccurrencesOfString:@"-" withString:@" "]];
     else
         return nil;
 }
@@ -203,6 +240,7 @@
     BOOL hasHost = NO;
     BOOL hasAcceptCharset = NO;
     BOOL hasConnection = NO;
+    BOOL hasCookies = NO;
     for( NSString* key in headers )
     {
         [value appendFormat:@"%@: %@\r\n", key, [headers objectForKey:key]];
@@ -214,6 +252,8 @@
             hasAcceptCharset = YES;
         else if( [key isEqualToString:@"Connection"] == YES )
             hasConnection = YES;
+        else if( [key isEqualToString:@"Cookie"] == YES )
+            hasCookies = YES;
     }
     
     // Add any missing headers
@@ -238,6 +278,16 @@
             [value appendString:@"Connection: close\r\n"];
         else
             [value appendString:@"Connection: keep-alive\r\n"];
+    }
+    if( ( hasCookies == NO ) && ( [cookies count] > 0 ) )
+    {
+        [value appendString:@"Cookie: "];
+        for( FHHTTPCookie* cookie in cookies )
+        {
+            [value appendString:[cookie description]];
+            [value appendString:@"; "];
+        }
+        [value appendString:@"\r\n"];
     }
     
     // Proxy headers

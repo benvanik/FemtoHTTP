@@ -324,8 +324,23 @@ deadSocket:
             NSString* headerKey = nil;
             if( [scanner scanUpToCharactersFromSet:colonSet intoString:&headerKey] )
             {
+                headerKey = [headerKey lowercaseString];
                 NSString* headerValue = [[line substringFromIndex:[scanner scanLocation] + 2] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-                [headers setObject:headerValue forKey:[headerKey lowercaseString]];
+                if( [headerKey isEqualToString:@"set-cookie"] == YES )
+                {
+                    // There may be multiple set-cookie headers, so merge if we already have one
+                    NSString* existingValue = [headers objectForKey:headerKey];
+                    if( existingValue != nil )
+                    {
+                        // Delimit with newline, as that shouldn't be valid inside a cookie
+                        headerValue = [NSString stringWithFormat:@"%@\n%@", existingValue, headerValue];
+                        [headers setObject:headerValue forKey:headerKey];
+                    }
+                    else
+                        [headers setObject:headerValue forKey:headerKey];
+                }
+                else
+                    [headers setObject:headerValue forKey:headerKey];
             }
             else
                 errorScanning = YES;

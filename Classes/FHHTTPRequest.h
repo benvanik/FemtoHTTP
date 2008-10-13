@@ -12,6 +12,8 @@
  * \brief Structures related to HTTP requests.
  */
 
+@class FHHTTPCookie;
+
 /*!
  * A mutable HTTP request used to issue a command.
  */
@@ -20,6 +22,7 @@
     NSURL*                  url;
     NSString*               method;
     NSMutableDictionary*    headers;
+    NSMutableArray*         cookies;
     NSData*                 content;
     
     BOOL                    singleUse;
@@ -43,6 +46,10 @@
  * All header/value pairs that will be sent to the server. Keys will be normalized before being sent.
  */
 @property (nonatomic, readonly) NSDictionary* headers;
+/*!
+ * All the cookies that will be sent to the server.
+ */
+@property (nonatomic, readonly) NSArray* cookies;
 /*!
  * The data to send to the server.
  */
@@ -127,6 +134,32 @@
  * Remove all headers from the request.
  */
 - (void) removeAllHeaders;
+
+/*!
+ * Add a list of cookies to the request.
+ * @param newCookies A list of cookies.
+ */
+- (void) addCookies:(NSArray*)newCookies;
+/*!
+ * Add a cookie to the request.
+ * @param cookie The cookie to add.
+ */
+- (void) addCookie:(FHHTTPCookie*)cookie;
+/*!
+ * Get the cookie for the given name.
+ * @param name The name of the cookie to look up.
+ * @return The cookie with the given name or \c nil if not present.
+ */
+- (FHHTTPCookie*) cookieWithName:(NSString*)name;
+/*!
+ * Remove the given cookie from the request.
+ * @param cookie The cookie to remove.
+ */
+- (void) removeCookie:(FHHTTPCookie*)cookie;
+/*!
+ * Remove all cookies from the request.
+ */
+- (void) removeAllCookies;
 
 /*!
  * The string contents of the request.

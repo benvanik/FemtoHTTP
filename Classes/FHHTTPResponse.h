@@ -19,6 +19,7 @@
     NSDictionary*   headers;
     FHErrorCode     statusCode;
     NSString*       statusReason;
+    NSArray*        cookies;
     
     NSString*       location;
     NSDate*         lastModified;
@@ -39,6 +40,10 @@
  * The HTTP status reason returned by the server.
  */
 @property (nonatomic, readonly) NSString* statusReason;
+/*!
+ * All the cookies returned by the server.
+ */
+@property (nonatomic, readonly) NSArray* cookies;
 
 /*!
  * The redirect URI used in 3xx redirects.

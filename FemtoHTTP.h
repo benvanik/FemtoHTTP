@@ -15,6 +15,7 @@
 #import "FHErrorCodes.h"
 #import "FHConstants.h"
 
+#import "FHHTTPCookie.h"
 #import "FHHTTPRequest.h"
 #import "FHHTTPResponse.h"
 #import "FHHTTPConnection.h"

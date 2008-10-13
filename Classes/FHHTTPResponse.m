@@ -7,12 +7,14 @@
 //
 
 #import "FHHTTPResponse.h"
+#import "FHHTTPCookie.h"
 
 @implementation FHHTTPResponse
 
 @synthesize headers;
 @synthesize statusCode;
 @synthesize statusReason;
+@synthesize cookies;
 
 @synthesize location;
 @synthesize lastModified;
@@ -46,9 +48,21 @@
         id value = [headers objectForKey:@"location"];
         location = ( value == nil ) ? nil : [value retain];
         value = [headers objectForKey:@"last-modified"];
-        lastModified = ( value == nil ) ? nil : [[dateFormatter dateFromString:value] retain];
+        lastModified = ( value == nil ) ? nil : [[dateFormatter dateFromString:[value stringByReplacingOccurrencesOfString:@"-" withString:@" "]] retain];
         value = [headers objectForKey:@"content-type"];
         contentType = ( value == nil ) ? nil : [value retain];
+        
+        // Pull out cookies
+        NSMutableArray* cookieArray = [[NSMutableArray alloc] init];
+        value = [headers objectForKey:@"set-cookie"];
+        if( value != nil )
+        {
+            // We delimited the cookies from the server with newlines - split them up
+            NSArray* allCookies = [value componentsSeparatedByString:@"\n"];
+            for( NSString* cookie in allCookies )
+                [cookieArray addObject:[FHHTTPCookie cookieWithHTTPCookie:cookie]];
+        }
+        cookies = cookieArray;
         
         FHRELEASE( dateFormatter );
     }
@@ -61,6 +75,7 @@
     FHRELEASE( lastModified );
     FHRELEASE( contentType );
     
+    FHRELEASE( cookies );
     FHRELEASE( headers );
     FHRELEASE( statusReason );
     FHRELEASE( content );
