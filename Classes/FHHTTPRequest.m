@@ -11,16 +11,18 @@
 
 @implementation FHHTTPRequest
 
+@synthesize proxy;
 @synthesize url;
 @synthesize method;
 @synthesize headers;
 @synthesize content;
-
-@synthesize proxy;
-@synthesize proxyUserName;
-@synthesize proxyPassword;
+@dynamic contentAsString;
 
 @synthesize singleUse;
+
+@dynamic referer;
+@dynamic contentType;
+@dynamic ifModifiedSince;
 
 #pragma mark -
 #pragma mark Initialization
@@ -29,14 +31,11 @@
 {
     if( self = [super init] )
     {
+        proxy = nil;
         url = nil;
         method = [FHHTTPMethodGet retain];
         headers = [[NSMutableDictionary alloc] init];
         content = nil;
-        
-        proxy = nil;
-        proxyUserName = nil;
-        proxyPassword = nil;
         
         singleUse = NO;
         
@@ -170,9 +169,6 @@
         [headers removeObjectForKey:@"If-Modified-Since"];
 }
 
-#pragma mark -
-#pragma mark Content
-
 - (NSString*) contentAsString
 {
     if( content == nil )
@@ -249,11 +245,7 @@
     // Proxy headers
     if( proxy != nil )
     {
-        // Auth
-        if( proxyUserName != nil )
-        {
-            // TODO: proxy authentication?
-        }
+        // TODO: proxy authentication
     }
     
     // Content

@@ -17,8 +17,10 @@
 @synthesize location;
 @synthesize lastModified;
 @synthesize contentType;
+@dynamic mimeType;
 
 @synthesize content;
+@dynamic contentAsString;
 
 #pragma mark -
 #pragma mark Initialization

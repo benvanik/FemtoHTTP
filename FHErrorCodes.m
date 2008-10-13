@@ -28,7 +28,6 @@ FHDEFINEERROR( FHErrorDomainUnknown,    FHErrorOK,                      @"FHErro
 // -- FHErrorDomainInternal --
 
 FHDEFINEERROR( FHErrorDomainInternal,   FHErrorInternalUnknown,         @"FHErrorInternalUnknown",          YES, NO  ),
-FHDEFINEERROR( FHErrorDomainInternal,   FHErrorInternalHostNotFound,    @"FHErrorInternalHostNotFound",     YES, NO  ),
 FHDEFINEERROR( FHErrorDomainInternal,   FHErrorInternalOutOfMemory,     @"FHErrorInternalOutOfMemory",      YES, NO  ),
 FHDEFINEERROR( FHErrorDomainInternal,   FHErrorInternalUnsupported,     @"FHErrorInternalUnsupported",      YES, NO  ),
 FHDEFINEERROR( FHErrorDomainInternal,   FHErrorInternalAccessDenied,    @"FHErrorInternalAccessDenied",     YES, NO  ),

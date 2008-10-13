@@ -85,8 +85,8 @@
                 break;
         }
         FHLOGERROR( errorCode, @"Unable to lookup host %@", hostName );
-		return errorCode;
-	}
+        return errorCode;
+    }
     *outHostent = host;
     return FHErrorOK;
 }
@@ -99,7 +99,7 @@
     struct hostent* host;
     errorCode = [FHTCPSocket lookupHostName:hostName hostent:&host];
     if( errorCode != FHErrorOK )
-		return errorCode;
+        return errorCode;
     
     return [self openWithHostent:host];
 }
@@ -114,7 +114,7 @@
     addr.sin_port = htons( port );
     memcpy( &addr.sin_addr.s_addr, host->h_addr, host->h_length );
 
- 	fd = socket( addr.sin_family, SOCK_STREAM, IPPROTO_TCP );
+    fd = socket( addr.sin_family, SOCK_STREAM, IPPROTO_TCP );
     if( fd < 0 )
     {
         switch( errno )
@@ -138,7 +138,7 @@
                 break;
         }
         FHLOGERROR( errorCode, @"Unable to create socket to host %@:%d", hostName, port );
-		return errorCode;
+        return errorCode;
     }
     
     // Keep-Alive enabled
@@ -156,7 +156,7 @@
     setsockopt( fd, SOL_SOCKET, SO_RCVTIMEO, &optval, sizeof( int ) );
     setsockopt( fd, SOL_SOCKET, SO_SNDTIMEO, &optval, sizeof( int ) );
     
- 	int connectResult = connect( fd, ( struct sockaddr* )&addr, sizeof( struct sockaddr ) );
+    int connectResult = connect( fd, ( struct sockaddr* )&addr, sizeof( struct sockaddr ) );
     if( connectResult != 0 )
     {
         switch( errno )
@@ -205,7 +205,7 @@
         
         [self close];
         FHLOGERROR( errorCode, @"Unable to connect socket to host %@:%d", hostName, port );
-		return errorCode;
+        return errorCode;
     }
     
     errorCode = FHErrorOK;
@@ -412,7 +412,7 @@
             // Error reading - abort - error code is already set
             return errorCode;
         }
- 	}
+    }
     
     // Shrink buffer
     memmove( [buffer mutableBytes], [buffer mutableBytes] + length, [buffer length] - length );
@@ -424,9 +424,9 @@
 
 - (NSString*) readLine
 {
- 	while( YES )
+    while( YES )
     {
- 		char* start = [buffer mutableBytes];
+        char* start = [buffer mutableBytes];
         char* end = strchr( start, '\n' );
         NSInteger length = end - start + 1;
         if( ( end != NULL ) && ( length <= [buffer length] ) )
@@ -441,12 +441,12 @@
             NSString* string = [[NSString alloc] initWithBytes:start length:stringLength encoding:NSUTF8StringEncoding];
 
             // Shrink buffer
- 			memmove( [buffer mutableBytes], [buffer mutableBytes] + length, [buffer length] - length );
- 			[buffer setLength:[buffer length] - length];
+            memmove( [buffer mutableBytes], [buffer mutableBytes] + length, [buffer length] - length );
+            [buffer setLength:[buffer length] - length];
             
             errorCode = FHErrorOK;
             return [string autorelease];
- 		}
+        }
         
         NSInteger bytesRead;
         if( [self readChunk:&bytesRead] != FHErrorOK )
@@ -454,7 +454,7 @@
             // Error reading - abort
             return nil;
         }
- 	}
+    }
 }
 
 - (NSData*) readData:(NSInteger)length
@@ -471,7 +471,7 @@
 
 - (NSInteger) readBytes:(void*)bytes length:(NSInteger)length
 {
- 	while( [buffer length] < length )
+    while( [buffer length] < length )
     {
         NSInteger bytesRead;
         if( [self readChunk:&bytesRead] != FHErrorOK )
@@ -479,7 +479,7 @@
             // Error reading - abort - error code is already set
             return -1;
         }
- 	}
+    }
     
     // Copy to dest
     memcpy( bytes, [buffer bytes], length );
