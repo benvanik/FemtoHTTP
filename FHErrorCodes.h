@@ -52,6 +52,7 @@ typedef enum {
     
     FHErrorHTTPMovedPermanently     = 301,      /*!<  */
     FHErrorHTTPFound                = 302,      /*!<  */
+    FHErrorHTTPSeeOther             = 303,      /*!<  */
     FHErrorHTTPNotModified          = 304,      /*!<  */
     FHErrorHTTPUseProxy             = 305,      /*!<  */
     FHErrorHTTPTemporaryRedirect    = 307,      /*!<  */

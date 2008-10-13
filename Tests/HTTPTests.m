@@ -87,4 +87,13 @@
     STAssertTrue( [[response contentAsString] rangeOfString:@"Select the entry for this HTML page and go to the"].location != NSNotFound, @"Unable to find footer string in contents" );
 }
 
+- (void) testRedirect
+{
+    FHHTTPRequest* request = [FHHTTPRequest requestWithURL:[NSURL URLWithString:@"http://httpwatch.com/httpgallery/chunked/"]];
+    FHHTTPResponse* response;
+    FHErrorCode errorCode = [FHHTTPConnection issueRequest:request returningResponse:&response];
+    STAssertEquals( errorCode, FHErrorOK, @"Error issuing request" );
+    STAssertTrue( FHErrorIsHTTPRedirect( [response statusCode] ) == YES, @"No redirect returned" );
+}
+
 @end

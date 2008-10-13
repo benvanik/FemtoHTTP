@@ -54,6 +54,7 @@ FHDEFINEERROR( FHErrorDomainHTTP,       FHErrorHTTPOKPartialContent,    @"FHErro
 
 FHDEFINEERROR( FHErrorDomainHTTP,       FHErrorHTTPMovedPermanently,    @"FHErrorHTTPMovedPermanently",     NO,  YES ),
 FHDEFINEERROR( FHErrorDomainHTTP,       FHErrorHTTPFound,               @"FHErrorHTTPFound",                NO,  YES ),
+FHDEFINEERROR( FHErrorDomainHTTP,       FHErrorHTTPSeeOther,            @"FHErrorHTTPSeeOther",             NO,  YES ),
 FHDEFINEERROR( FHErrorDomainHTTP,       FHErrorHTTPNotModified,         @"FHErrorHTTPNotModified",          NO,  YES ),
 FHDEFINEERROR( FHErrorDomainHTTP,       FHErrorHTTPUseProxy,            @"FHErrorHTTPUseProxy",             YES, YES ),
 FHDEFINEERROR( FHErrorDomainHTTP,       FHErrorHTTPTemporaryRedirect,   @"FHErrorHTTPTemporaryRedirect",    NO,  YES ),
@@ -157,6 +158,7 @@ BOOL FHErrorIsHTTPRedirect( FHErrorCode code )
     {
         case FHErrorHTTPMovedPermanently:
         case FHErrorHTTPFound:
+        case FHErrorHTTPSeeOther:
         case FHErrorHTTPTemporaryRedirect:
             return YES;
         default:

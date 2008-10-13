@@ -241,19 +241,23 @@
     BOOL hasAcceptCharset = NO;
     BOOL hasConnection = NO;
     BOOL hasCookies = NO;
+    BOOL hasExpect = NO;
     for( NSString* key in headers )
     {
         [value appendFormat:@"%@: %@\r\n", key, [headers objectForKey:key]];
-        if( [key isEqualToString:@"User-Agent"] == YES )
+        NSString* lowerKey = [key lowercaseString];
+        if( [lowerKey isEqualToString:@"user-agent"] == YES )
             hasUA = YES;
-        else if( [key isEqualToString:@"Host"] == YES )
+        else if( [lowerKey isEqualToString:@"host"] == YES )
             hasHost = YES;
-        else if( [key isEqualToString:@"Accept-Charset"] == YES )
+        else if( [lowerKey isEqualToString:@"accept-charset"] == YES )
             hasAcceptCharset = YES;
-        else if( [key isEqualToString:@"Connection"] == YES )
+        else if( [lowerKey isEqualToString:@"connection"] == YES )
             hasConnection = YES;
-        else if( [key isEqualToString:@"Cookie"] == YES )
+        else if( [lowerKey isEqualToString:@"cookie"] == YES )
             hasCookies = YES;
+        else if( [lowerKey isEqualToString:@"expect"] == YES )
+            hasExpect = YES;
     }
     
     // Add any missing headers
@@ -289,6 +293,8 @@
         }
         [value appendString:@"\r\n"];
     }
+    if( ( hasExpect == NO ) && ( [content length] > 0 ) )
+        [value appendString:@"Expect: 100-continue\r\n"];
     
     // Proxy headers
     if( proxy != nil )

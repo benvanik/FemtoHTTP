@@ -31,4 +31,9 @@
  */
 + (FHErrorCode) issueRequest:(FHHTTPRequest*)request returningResponse:(FHHTTPResponse**)outResponse;
 
+/*!
+ * Shutdown the FemtoHTTP connection runtime. It can be started again later.
+ */
++ (void) shutdown;
+
 @end

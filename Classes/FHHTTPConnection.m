@@ -20,6 +20,9 @@
 
 @implementation FHHTTPConnection
 
+#pragma mark -
+#pragma mark Calls
+
 + (FHErrorCode) issueRequest:(FHHTTPRequest*)request returningResponse:(FHHTTPResponse**)outResponse
 {
     FHErrorCode errorCode = FHErrorOK;
@@ -75,27 +78,7 @@ deadSocket:
         return errorCode;
     }
     
-    // Write body if present
-    // TODO: support 100-continue (send Expect, wait for 100-continue before sending)
-    if( [request content] != nil )
-    {
-        errorCode = [socket writeData:[request content]];
-        if( errorCode != FHErrorOK )
-        {
-            [hostEntry closeSocket:socket closeConnection:YES];
-            FHLOGERROR( errorCode, @"Unable to write request body for URL %@", [[request url] absoluteString] );
-            return errorCode;
-        }
-        
-        // Write trailing newline - I think this is required
-        errorCode = [socket writeNewLine];
-        if( errorCode != FHErrorOK )
-        {
-            [hostEntry closeSocket:socket closeConnection:YES];
-            FHLOGERROR( errorCode, @"Unable to write request body trailer for URL %@", [[request url] absoluteString] );
-            return errorCode;
-        }
-    }
+    // NOTE: we write the request body below, as we are waiting for a 100 Continue and need to read it first
     
     // Wait until data ready - this will fail if we are a now-closed reused connection
     errorCode = [socket waitUntilDataPresent];
@@ -124,7 +107,31 @@ deadSocket:
         [responseHeaders removeAllObjects];
         statusCode = [FHHTTPConnection readHeaders:responseHeaders statusReason:&statusReason fromSocket:socket isFooter:NO];
         if( statusCode == FHErrorHTTPContinue )
+        {
+            // Was waiting to write the contents, so write them!
+            if( [request content] != nil )
+            {
+                errorCode = [socket writeData:[request content]];
+                if( errorCode != FHErrorOK )
+                {
+                    [hostEntry closeSocket:socket closeConnection:YES];
+                    FHLOGERROR( errorCode, @"Unable to write request body for URL %@", [[request url] absoluteString] );
+                    return errorCode;
+                }
+                
+                // Write trailing newline - I think this is required
+                errorCode = [socket writeNewLine];
+                if( errorCode != FHErrorOK )
+                {
+                    [hostEntry closeSocket:socket closeConnection:YES];
+                    FHLOGERROR( errorCode, @"Unable to write request body trailer for URL %@", [[request url] absoluteString] );
+                    return errorCode;
+                }
+            }
+            
+            // Continue waiting for the real response
             continue;
+        }
         if( ( statusCode != FHErrorOK ) && ( FHErrorGetDomain( statusCode ) != FHErrorDomainHTTP ) )
         {
             // Internal/socket errors
@@ -143,16 +150,6 @@ deadSocket:
         id value = [responseHeaders objectForKey:@"connection"];
         if( ( value != nil ) && ( [value caseInsensitiveCompare:@"close"] == NSOrderedSame ) )
             closeConnection = YES;
-        
-        if( FHErrorIsHTTPRedirect( statusCode ) == YES )
-        {
-            // Need to redirect - just call ourselves?
-            // TODO: implement redirects
-            [hostEntry closeSocket:socket closeConnection:YES];
-            errorCode = FHErrorInternalNotImplemented;
-            FHLOGERROR( errorCode, @"HTTP redirects not yet implemented - connection is now hosed!" );
-            return errorCode;
-        }
         
         // NOTE: even if the statusCode is not successful, it may contain a body, so make sure to read it out!
         
@@ -253,6 +250,17 @@ deadSocket:
     
     // Cleanup
     [hostEntry closeSocket:socket closeConnection:closeConnection];
+    
+    if( FHErrorIsHTTPRedirect( statusCode ) == YES )
+    {
+        // Need to redirect - just call ourselves?
+        // TODO: implement auto redirects
+        FHLOG( @"Received %d (%@) for URL %@ - would auto redirect here to %@", statusCode, FHErrorGetName( statusCode ), [[request url] absoluteString], [responseHeaders objectForKey:@"location"] );
+        //[hostEntry closeSocket:socket closeConnection:YES];
+        //errorCode = FHErrorInternalNotImplemented;
+        //FHLOGERROR( errorCode, @"HTTP redirects not yet implemented - connection is now hosed!" );
+        //return errorCode;
+    }
     
     // Build response
     if( outResponse != NULL )
@@ -355,6 +363,14 @@ deadSocket:
     }
     
     return statusCode;
+}
+
+#pragma mark -
+#pragma mark Engine Control
+
++ (void) shutdown
+{
+    [[FHHostPool sharedHostPool] removeAllHosts];
 }
 
 @end
