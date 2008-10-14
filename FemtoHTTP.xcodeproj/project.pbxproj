@@ -54,12 +54,13 @@
 		9006BFBD0EA341EB007D462D /* RequestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9006BFBC0EA341EB007D462D /* RequestTests.m */; };
 		9006BFC00EA341F3007D462D /* ResponseTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9006BFBF0EA341F3007D462D /* ResponseTests.m */; };
 		9006BFC30EA341FB007D462D /* HTTPTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9006BFC20EA341FB007D462D /* HTTPTests.m */; };
-		9006BFD80EA3433C007D462D /* FemtoHTTP.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8DC2EF5B0486A6940098B216 /* FemtoHTTP.framework */; };
+		9006BFD80EA3433C007D462D /* FemtoHTTP in Frameworks */ = {isa = PBXBuildFile; fileRef = 8DC2EF5B0486A6940098B216 /* FemtoHTTP */; };
 		9006C7F10EA3B636007D462D /* FHHTTPCookie.h in Headers */ = {isa = PBXBuildFile; fileRef = 9006C7EF0EA3B636007D462D /* FHHTTPCookie.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9006C7F20EA3B636007D462D /* FHHTTPCookie.m in Sources */ = {isa = PBXBuildFile; fileRef = 9006C7F00EA3B636007D462D /* FHHTTPCookie.m */; };
 		9006C7F30EA3B636007D462D /* FHHTTPCookie.h in Headers */ = {isa = PBXBuildFile; fileRef = 9006C7EF0EA3B636007D462D /* FHHTTPCookie.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9006C7F40EA3B636007D462D /* FHHTTPCookie.m in Sources */ = {isa = PBXBuildFile; fileRef = 9006C7F00EA3B636007D462D /* FHHTTPCookie.m */; };
 		9006C8FC0EA3C645007D462D /* CookieTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9006C8FB0EA3C645007D462D /* CookieTests.m */; };
+		9006CB5D0EA43980007D462D /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9006CB5C0EA43980007D462D /* libz.dylib */; };
 		900E0B700EA2B54000409EF8 /* FHHTTPResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = 900E0B6E0EA2B54000409EF8 /* FHHTTPResponse.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		900E0B710EA2B54000409EF8 /* FHHTTPResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 900E0B6F0EA2B54000409EF8 /* FHHTTPResponse.m */; };
 		900E0B720EA2B54000409EF8 /* FHHTTPResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = 900E0B6E0EA2B54000409EF8 /* FHHTTPResponse.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -93,7 +94,7 @@
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		32DBCF5E0370ADEE00C91783 /* FemtoHTTP_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FemtoHTTP_Prefix.pch; sourceTree = "<group>"; };
 		8DC2EF5A0486A6940098B216 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8DC2EF5B0486A6940098B216 /* FemtoHTTP.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FemtoHTTP.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8DC2EF5B0486A6940098B216 /* FemtoHTTP */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = folder; path = FemtoHTTP; sourceTree = BUILT_PRODUCTS_DIR; };
 		9006BAC80EA2B7F4007D462D /* FemtoHTTP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FemtoHTTP.h; sourceTree = "<group>"; };
 		9006BACE0EA2B801007D462D /* FHConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FHConfig.h; sourceTree = "<group>"; };
 		9006BAE10EA2B8A5007D462D /* FHErrorCodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FHErrorCodes.h; sourceTree = "<group>"; };
@@ -124,6 +125,7 @@
 		9006C7F00EA3B636007D462D /* FHHTTPCookie.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FHHTTPCookie.m; path = Classes/FHHTTPCookie.m; sourceTree = "<group>"; };
 		9006C8FA0EA3C645007D462D /* CookieTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CookieTests.h; path = Tests/CookieTests.h; sourceTree = "<group>"; };
 		9006C8FB0EA3C645007D462D /* CookieTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CookieTests.m; path = Tests/CookieTests.m; sourceTree = "<group>"; };
+		9006CB5C0EA43980007D462D /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		900E0B640EA2B4A900409EF8 /* libFemtoHTTP.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFemtoHTTP.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		900E0B6E0EA2B54000409EF8 /* FHHTTPResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FHHTTPResponse.h; path = Classes/FHHTTPResponse.h; sourceTree = "<group>"; };
 		900E0B6F0EA2B54000409EF8 /* FHHTTPResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FHHTTPResponse.m; path = Classes/FHHTTPResponse.m; sourceTree = "<group>"; };
@@ -148,7 +150,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9006BFD80EA3433C007D462D /* FemtoHTTP.framework in Frameworks */,
+				9006BFD80EA3433C007D462D /* FemtoHTTP in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -156,6 +158,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9006CB5D0EA43980007D462D /* libz.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -165,7 +168,7 @@
 		034768DFFF38A50411DB9C8B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8DC2EF5B0486A6940098B216 /* FemtoHTTP.framework */,
+				8DC2EF5B0486A6940098B216 /* FemtoHTTP */,
 				900E0B640EA2B4A900409EF8 /* libFemtoHTTP.a */,
 				9006BF7D0EA33FC0007D462D /* FemtoHTTPTest.octest */,
 			);
@@ -226,6 +229,7 @@
 			isa = PBXGroup;
 			children = (
 				1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */,
+				9006CB5C0EA43980007D462D /* libz.dylib */,
 			);
 			name = "Linked Frameworks";
 			sourceTree = "<group>";
@@ -349,7 +353,7 @@
 			name = FemtoHTTP;
 			productInstallPath = "$(HOME)/Library/Frameworks";
 			productName = FemtoHTTP;
-			productReference = 8DC2EF5B0486A6940098B216 /* FemtoHTTP.framework */;
+			productReference = 8DC2EF5B0486A6940098B216 /* FemtoHTTP */;
 			productType = "com.apple.product-type.framework";
 		};
 		9006BF7C0EA33FC0007D462D /* FemtoHTTPTest */ = {
@@ -541,6 +545,7 @@
 				GCC_PREFIX_HEADER = FemtoHTTP_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "@executable_path/../Frameworks";
+				OTHER_LDFLAGS = "-lz";
 				PRODUCT_NAME = FemtoHTTP;
 				WRAPPER_EXTENSION = framework;
 			};
@@ -560,6 +565,7 @@
 				GCC_PREFIX_HEADER = FemtoHTTP_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "@executable_path/../Frameworks";
+				OTHER_LDFLAGS = "-lz";
 				PRODUCT_NAME = FemtoHTTP;
 				WRAPPER_EXTENSION = framework;
 			};

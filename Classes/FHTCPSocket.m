@@ -404,19 +404,17 @@
 
 - (FHErrorCode) skipBytes:(NSInteger)length
 {
-    while( [buffer length] < length )
-    {
-        NSInteger bytesRead;
-        if( [self readChunk:&bytesRead] != FHErrorOK )
-        {
-            // Error reading - abort - error code is already set
-            return errorCode;
-        }
-    }
+    // TODO: make this massively more efficient by not calling readBytes
     
-    // Shrink buffer
-    memmove( [buffer mutableBytes], [buffer mutableBytes] + length, [buffer length] - length );
-    [buffer setLength:[buffer length] - length];
+    char bytes[ 1024 ];
+    NSInteger remaining = length;
+    
+    while( remaining > 0 )
+    {
+        NSInteger bytesRead = [self readBytes:bytes length:MIN( remaining, sizeof( bytes ) )];
+        if( bytesRead < 0 )
+            return errorCode;
+    }
     
     errorCode = FHErrorOK;
     return errorCode;

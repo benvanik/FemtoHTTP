@@ -99,7 +99,7 @@ deadSocket:
     FHErrorCode statusCode = 0;
     NSString* statusReason = nil;
     NSData* content = nil;
-    BOOL closeConnection = [request singleUse];
+    BOOL closeConnection = FHHTTPRequestOptionIsSet( request, FHHTTPRequestSingleUse );
     
     while( YES )
     {
@@ -207,9 +207,17 @@ deadSocket:
                         return errorCode;
                     }
                     
+                    // If content ignored, don't grow the buffer
+                    if( FHHTTPRequestOptionIsSet( request, FHHTTPRequestIgnoreResponseBody ) == YES )
+                        [chunkedContent setLength:0];
+                    
                     // Skip newline
                     [socket readLine];
                 }
+
+                // Ignore content if requested
+                if( FHHTTPRequestOptionIsSet( request, FHHTTPRequestIgnoreResponseBody ) == YES )
+                    FHRELEASE( chunkedContent );
                 
                 content = chunkedContent;
                 
@@ -233,14 +241,28 @@ deadSocket:
                     return errorCode;
                 }
                 
-                content = [[socket readData:contentLength] retain];
-                if( content == nil )
+                if( FHHTTPRequestOptionIsSet( request, FHHTTPRequestIgnoreResponseBody ) == YES )
                 {
-                    // Error reading data
-                    errorCode = [socket errorCode];
-                    [hostEntry closeSocket:socket closeConnection:YES];
-                    FHLOGERROR( errorCode, @"Unable to read response data for URL %@", [[request url] absoluteString] );
-                    return errorCode;
+                    // Skip contents
+                    errorCode = [socket skipBytes:contentLength];
+                    if( errorCode != FHErrorOK )
+                    {
+                        [hostEntry closeSocket:socket closeConnection:YES];
+                        FHLOGERROR( errorCode, @"Unable to skip response data for URL %@", [[request url] absoluteString] );
+                        return errorCode;
+                    }
+                }
+                else
+                {
+                    content = [[socket readData:contentLength] retain];
+                    if( content == nil )
+                    {
+                        // Error reading data
+                        errorCode = [socket errorCode];
+                        [hostEntry closeSocket:socket closeConnection:YES];
+                        FHLOGERROR( errorCode, @"Unable to read response data for URL %@", [[request url] absoluteString] );
+                        return errorCode;
+                    }
                 }
             }
         }
@@ -263,8 +285,14 @@ deadSocket:
     }
     
     // Build response
+    BOOL autoDecompress = FHHTTPRequestOptionIsSet( request, FHHTTPRequestAutoDecompress );
     if( outResponse != NULL )
-        *outResponse = [[[FHHTTPResponse alloc] initWithHeaders:responseHeaders statusCode:statusCode statusReason:statusReason content:content] autorelease];
+        *outResponse = [[[FHHTTPResponse alloc] initWithURL:[request url]
+                                                    headers:responseHeaders
+                                                 statusCode:statusCode
+                                               statusReason:statusReason
+                                                    content:content
+                                             autoDecompress:autoDecompress] autorelease];
     
     FHRELEASE( content );
     

@@ -11,9 +11,13 @@
 
 @interface FHHTTPResponse (Implementation)
 
-- (id) initWithHeaders:(NSDictionary*)headers
-            statusCode:(FHErrorCode)statusCode
-          statusReason:(NSString*)statusReason
-               content:(NSData*)content;
+- (id) initWithURL:(NSURL*)url
+           headers:(NSDictionary*)headers
+        statusCode:(FHErrorCode)statusCode
+      statusReason:(NSString*)statusReason
+           content:(NSData*)content
+    autoDecompress:(BOOL)autoDecompress;
+
+- (void) setIsRedirectFrom:(NSURL*)originalURL;
 
 @end

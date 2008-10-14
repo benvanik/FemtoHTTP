@@ -20,7 +20,8 @@
 @synthesize content;
 @dynamic contentAsString;
 
-@synthesize singleUse;
+@synthesize options;
+@synthesize timeout;
 
 @dynamic referer;
 @dynamic contentType;
@@ -40,7 +41,8 @@
         cookies = [[NSMutableArray alloc] init];
         content = nil;
         
-        singleUse = NO;
+        options = FHHTTPRequestDefaultOptions;
+        timeout = FH_DEFAULT_TIMEOUT;
         
         dateFormatter = [[NSDateFormatter alloc] init];
         [dateFormatter setDateFormat:@"EEE, dd MMM yyyy HH:mm:ss zzz"];
@@ -239,6 +241,7 @@
     BOOL hasUA = NO;
     BOOL hasHost = NO;
     BOOL hasAcceptCharset = NO;
+    BOOL hasAcceptEncoding = NO;
     BOOL hasConnection = NO;
     BOOL hasCookies = NO;
     BOOL hasExpect = NO;
@@ -252,6 +255,8 @@
             hasHost = YES;
         else if( [lowerKey isEqualToString:@"accept-charset"] == YES )
             hasAcceptCharset = YES;
+        else if( [lowerKey isEqualToString:@"accept-encoding"] == YES )
+            hasAcceptEncoding = YES;
         else if( [lowerKey isEqualToString:@"connection"] == YES )
             hasConnection = YES;
         else if( [lowerKey isEqualToString:@"cookie"] == YES )
@@ -276,12 +281,20 @@
         [value appendFormat:@"Host: %@:%@\r\n", [url host], ( [url port] != nil ) ? [url port] : @"80"];
     if( hasAcceptCharset == NO )
         [value appendString:@"Accept-Charset: UTF-8; q=1.0, US-ASCII; q=0.9, ISO-8859-1; q=0.9, ISO-10646-UCS-2; q=0.6\r\n"];
+    if( FHHTTPRequestOptionIsSet( self, FHHTTPRequestAllowCompression ) == YES )
+    {
+        if( hasAcceptEncoding == NO )
+            [value appendString:@"Accept-Encoding: gzip,deflate\r\n"];
+    }
     if( hasConnection == NO )
     {
-        if( singleUse == YES )
+        if( FHHTTPRequestOptionIsSet( self, FHHTTPRequestSingleUse ) == YES )
             [value appendString:@"Connection: close\r\n"];
         else
+        {
+            [value appendFormat:@"Keep-Alive: %d\r\n", timeout];
             [value appendString:@"Connection: keep-alive\r\n"];
+        }
     }
     if( ( hasCookies == NO ) && ( [cookies count] > 0 ) )
     {
@@ -293,8 +306,11 @@
         }
         [value appendString:@"\r\n"];
     }
-    if( ( hasExpect == NO ) && ( [content length] > 0 ) )
-        [value appendString:@"Expect: 100-continue\r\n"];
+    if( FHHTTPRequestOptionIsSet( self, FHHTTPRequestWaitForAcknowledge ) == YES )
+    {
+        if( ( hasExpect == NO ) && ( [content length] > 0 ) )
+            [value appendString:@"Expect: 100-continue\r\n"];
+    }
     
     // Proxy headers
     if( proxy != nil )

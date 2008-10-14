@@ -31,3 +31,24 @@ FEMTOHTTP_EXPORT NSString* const FHHTTPMethodPost;
  * The HTTP 'HEAD' method.
  */
 FEMTOHTTP_EXPORT NSString* const FHHTTPMethodHead;
+
+/*!
+ * \var NSString* const FHHTTPContentEncodingIdentity
+ * \brief HTTP 'identity' Content-Encoding header value.
+ * \details Denotes that the content is in its original form.
+ */
+FEMTOHTTP_EXPORT NSString* const FHHTTPContentEncodingIdentity;
+
+/*!
+ * \var NSString* const FHHTTPContentEncodingGZIP
+ * \brief HTTP 'gzip' Content-Encoding header value.
+ * \details Denotes that the content is gzip compressed.
+ */
+FEMTOHTTP_EXPORT NSString* const FHHTTPContentEncodingGZIP;
+
+/*!
+ * \var NSString* const FHHTTPContentEncodingDeflate
+ * \brief HTTP 'deflate' Content-Encoding header value.
+ * \details Denotes that the content is deflated.
+ */
+FEMTOHTTP_EXPORT NSString* const FHHTTPContentEncodingDeflate;

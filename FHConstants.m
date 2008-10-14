@@ -8,6 +8,10 @@
 
 #import "FHConstants.h"
 
-NSString* const FHHTTPMethodGet = @"GET";
-NSString* const FHHTTPMethodPost = @"POST";
-NSString* const FHHTTPMethodHead = @"HEAD";
+NSString* const FHHTTPMethodGet                 = @"GET";
+NSString* const FHHTTPMethodPost                = @"POST";
+NSString* const FHHTTPMethodHead                = @"HEAD";
+
+NSString* const FHHTTPContentEncodingIdentity   = @"identity";
+NSString* const FHHTTPContentEncodingGZIP       = @"gzip";
+NSString* const FHHTTPContentEncodingDeflate    = @"deflate";

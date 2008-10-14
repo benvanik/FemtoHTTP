@@ -47,11 +47,11 @@
  */
 @property (nonatomic, readonly) NSString* domain;
 /*!
- * YES if the cookie is only valid over HTTPS.
+ * \c YES if the cookie is only valid over HTTPS.
  */
 @property (nonatomic, readonly) BOOL isSecure;
 /*!
- * YES if the cookie is to be hidden from script.
+ * \c YES if the cookie is to be hidden from script.
  */
 @property (nonatomic, readonly) BOOL isHTTPOnly;
 
