@@ -76,14 +76,20 @@
                 if( socket != nil )
                 {
                     [idleSockets removeLastObject];
+                    
+                    // NOTE: do this outside of the lock
+                    [lock unlock];
                     if( [socket queryStatus] != FHErrorOK )
                     {
                         // Socket is closed/etc - need a new one!
+                        if( FEMTOHTTP_HOST_KILLED_IDLE_ENABLED() )
+                            FEMTOHTTP_HOST_KILLED_IDLE( socket->identifier, CSTRING( hostName ), port );
                         [openedSockets removeObject:socket];
                         FHRELEASE( socket );
                     }
                     else if( outWasReused != NULL )
                         *outWasReused = YES;
+                    [lock lock];
                 }
             }
             if( socket != nil )
@@ -101,7 +107,11 @@
         }
         
         // Wait until a connection is closed/etc
+        if( FEMTOHTTP_HOST_PRE_WAIT_FOR_SOCKET_ENABLED() )
+            FEMTOHTTP_HOST_PRE_WAIT_FOR_SOCKET( CSTRING( hostName ), port );
         [lock wait];
+        if( FEMTOHTTP_HOST_WAIT_FOR_SOCKET_ENABLED() )
+            FEMTOHTTP_HOST_WAIT_FOR_SOCKET( CSTRING( hostName ), port );
     }
     [lock unlock];
     
@@ -114,6 +124,8 @@
         if( errorCode != FHErrorOK )
         {
             // Failed - remove from list
+            if( FEMTOHTTP_HOST_NEW_FAILED_ENABLED() )
+                FEMTOHTTP_HOST_NEW_FAILED( socket->identifier, CSTRING( hostName ), port );
             [lock lock];
             [openedSockets removeObject:socket];
             [lock signal];
@@ -121,7 +133,15 @@
             FHRELEASE( socket );
             return nil;
         }
+        else
+        {
+            if( FEMTOHTTP_HOST_NEW_CONNECTION_ENABLED() )
+                FEMTOHTTP_HOST_NEW_CONNECTION( socket->identifier, CSTRING( hostName ), port );
+        }
     }
+
+    if( FEMTOHTTP_HOST_OBTAIN_CONNECTION_ENABLED() )
+        FEMTOHTTP_HOST_OBTAIN_CONNECTION( socket->identifier, CSTRING( hostName ), port, !needsOpen );
  
 #if defined( FH_DEBUG_OUTPUT )
     if( ( outWasReused != NULL ) && ( *outWasReused == YES ) )
@@ -135,6 +155,9 @@
 
 - (void) closeSocket:(FHTCPSocket*)socket closeConnection:(BOOL)closeConnection
 {
+    if( FEMTOHTTP_HOST_CLOSE_CONNECTION_ENABLED() )
+        FEMTOHTTP_HOST_CLOSE_CONNECTION( socket->identifier, CSTRING( hostName ), port, closeConnection, [socket fd] == -1 );
+    
     if( closeConnection == YES )
     {
         [lock lock];

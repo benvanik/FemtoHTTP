@@ -17,6 +17,10 @@
     FHErrorCode errorCode;
     
     NSMutableData*  buffer;
+
+@public
+    // Used for dtrace probes
+    NSInteger   identifier;
 }
 
 @property (nonatomic, readonly) NSString* hostName;

@@ -18,6 +18,8 @@
 + (FHErrorCode) readHeaders:(NSMutableDictionary*)headers statusReason:(NSString**)outStatusReason fromSocket:(FHTCPSocket*)socket isFooter:(BOOL)isFooter;
 @end
 
+#define DTRACE_HTTP_END() if( FEMTOHTTP_HTTP_END_ENABLED() ) FEMTOHTTP_HTTP_END()
+
 @implementation FHHTTPConnection
 
 #pragma mark -
@@ -31,6 +33,9 @@
     
     // TODO: validate input
     
+    if( FEMTOHTTP_HTTP_BEGIN_ENABLED() )
+        FEMTOHTTP_HTTP_BEGIN( CSTRING( [[request url] absoluteString] ) );
+    
     // Switch for proxy - send all requests through target proxy server
     NSURL* hostUrl = ( [request proxy] != nil ) ? [request proxy] : [request url];
     
@@ -38,6 +43,7 @@
     FHHostEntry* hostEntry = [[FHHostPool sharedHostPool] hostForURL:hostUrl];
     if( hostEntry == nil )
     {
+        DTRACE_HTTP_END();
         errorCode = FHErrorInternalInvalidArguments;
         FHLOGERROR( errorCode, @"Unable to get host entry for URL %@", [hostUrl absoluteString] );
         return errorCode;
@@ -52,6 +58,7 @@ deadSocket:
     NSString* requestHeader = [request generate];
     if( requestHeader == nil )
     {
+        DTRACE_HTTP_END();
         errorCode = FHErrorInternalInvalidArguments;
         FHLOGERROR( errorCode, @"Unable to generate request for URL %@", [[request url] absoluteString] );
         return errorCode;
@@ -62,17 +69,27 @@ deadSocket:
     FHTCPSocket* socket = [hostEntry openSocket:YES errorCode:&errorCode wasReused:&wasReused];
     if( socket == nil )
     {
+        DTRACE_HTTP_END();
         FHRELEASE( requestHeader );
         errorCode = FHErrorInternalInvalidArguments;
         FHLOGERROR( errorCode, @"Unable to obtain socket for URL %@", [hostUrl absoluteString] );
         return errorCode;
     }
+    if( FEMTOHTTP_HTTP_USING_SOCKET_ENABLED() )
+        FEMTOHTTP_HTTP_USING_SOCKET( socket->identifier );
     
     // Write request headers
+    if( FEMTOHTTP_HTTP_PRE_HEADER_WRITE_ENABLED() )
+        FEMTOHTTP_HTTP_PRE_HEADER_WRITE( [requestHeader length] );
+    if( FEMTOHTTP_HTTP_HEADER_WRITE_DATA_ENABLED() )
+        FEMTOHTTP_HTTP_HEADER_WRITE_DATA( CSTRING( requestHeader ) );
     errorCode = [socket writeString:requestHeader];
+    if( FEMTOHTTP_HTTP_HEADER_WRITE_ENABLED() )
+        FEMTOHTTP_HTTP_HEADER_WRITE( [requestHeader length] );
     FHRELEASE( requestHeader );
     if( errorCode != FHErrorOK )
     {
+        DTRACE_HTTP_END();
         [hostEntry closeSocket:socket closeConnection:YES];
         FHLOGERROR( errorCode, @"Unable to write request header for URL %@", [[request url] absoluteString] );
         return errorCode;
@@ -88,9 +105,12 @@ deadSocket:
         if( ( errorCode == FHErrorSocketDisconnected ) && ( wasReused == YES ) )
         {
             // Now-disconnected idle socket - try again
+            if( FEMTOHTTP_HTTP_SOCKET_RETRY_ENABLED() )
+                FEMTOHTTP_HTTP_SOCKET_RETRY();
             FHLOG( @"waitUntilDataPresent killed bad idle socket - retrying" );
             goto deadSocket;
         }
+        DTRACE_HTTP_END();
         FHLOGERROR( errorCode, @"Error waiting for data for URL %@", [[request url] absoluteString] );
         return errorCode;
     }
@@ -111,10 +131,17 @@ deadSocket:
             // Was waiting to write the contents, so write them!
             if( [request content] != nil )
             {
+                if( FEMTOHTTP_HTTP_PRE_CONTENT_WRITE_ENABLED() )
+                    FEMTOHTTP_HTTP_PRE_CONTENT_WRITE( [[request content] length] );
+                if( FEMTOHTTP_HTTP_CONTENT_WRITE_DATA_ENABLED() )
+                    FEMTOHTTP_HTTP_CONTENT_WRITE_DATA( CSTRING( [request contentAsString] ) );
                 errorCode = [socket writeData:[request content]];
+                if( FEMTOHTTP_HTTP_CONTENT_WRITE_ENABLED() )
+                    FEMTOHTTP_HTTP_CONTENT_WRITE( [[request content] length] );
                 if( errorCode != FHErrorOK )
                 {
                     [hostEntry closeSocket:socket closeConnection:YES];
+                    DTRACE_HTTP_END();
                     FHLOGERROR( errorCode, @"Unable to write request body for URL %@", [[request url] absoluteString] );
                     return errorCode;
                 }
@@ -124,6 +151,7 @@ deadSocket:
                 if( errorCode != FHErrorOK )
                 {
                     [hostEntry closeSocket:socket closeConnection:YES];
+                    DTRACE_HTTP_END();
                     FHLOGERROR( errorCode, @"Unable to write request body trailer for URL %@", [[request url] absoluteString] );
                     return errorCode;
                 }
@@ -139,9 +167,12 @@ deadSocket:
             if( ( statusCode == FHErrorSocketDisconnected ) && ( wasReused == YES ) )
             {
                 // Now-disconnected idle socket - try again
+                if( FEMTOHTTP_HTTP_SOCKET_RETRY_ENABLED() )
+                    FEMTOHTTP_HTTP_SOCKET_RETRY();
                 FHLOG( @"readHeaders killed bad idle socket - retrying" );
                 goto deadSocket;
             }
+            DTRACE_HTTP_END();
             FHLOGERROR( statusCode, @"Unable to read response headers for URL %@", [[request url] absoluteString] );
             return statusCode;
         }
@@ -163,11 +194,17 @@ deadSocket:
             bodyPresent = NO;
         if( bodyPresent == YES )
         {
+            if( FEMTOHTTP_HTTP_PRE_CONTENT_READ_ENABLED() )
+                FEMTOHTTP_HTTP_PRE_CONTENT_READ( isChunked );
+            
             if( isChunked == YES )
             {
                 NSMutableData* chunkedContent = [[NSMutableData alloc] init];
                 while( YES )
                 {
+                    if( FEMTOHTTP_HTTP_PRE_CONTENT_CHUNK_ENABLED() )
+                        FEMTOHTTP_HTTP_PRE_CONTENT_CHUNK();
+                    
                     // Read chunk size
                     // 1a; ignore-stuff-here
                     NSString* chunkLine = [socket readLine];
@@ -177,6 +214,7 @@ deadSocket:
                         FHRELEASE( chunkedContent );
                         errorCode = [socket errorCode];
                         [hostEntry closeSocket:socket closeConnection:YES];
+                        DTRACE_HTTP_END();
                         FHLOGERROR( errorCode, @"Unable to read chunked response header line data for URL %@", [[request url] absoluteString] );
                         return errorCode;
                     }
@@ -187,6 +225,7 @@ deadSocket:
                         FHRELEASE( chunkedContent );
                         [hostEntry closeSocket:socket closeConnection:YES];
                         errorCode = FHErrorInternalUnableToParse;
+                        DTRACE_HTTP_END();
                         FHLOGERROR( errorCode, @"Unable to parse chunked response header line data for URL %@", [[request url] absoluteString] );
                         return errorCode;
                     }
@@ -203,6 +242,7 @@ deadSocket:
                         // Error reading data
                         FHRELEASE( chunkedContent );
                         [hostEntry closeSocket:socket closeConnection:YES];
+                        DTRACE_HTTP_END();
                         FHLOGERROR( errorCode, @"Unable to read chunked response data for URL %@", [[request url] absoluteString] );
                         return errorCode;
                     }
@@ -213,6 +253,9 @@ deadSocket:
                     
                     // Skip newline
                     [socket readLine];
+                    
+                    if( FEMTOHTTP_HTTP_CONTENT_CHUNK_ENABLED() )
+                        FEMTOHTTP_HTTP_CONTENT_CHUNK( chunkSize );
                 }
 
                 // Ignore content if requested
@@ -226,6 +269,7 @@ deadSocket:
                 if( errorCode != FHErrorOK )
                 {
                     [hostEntry closeSocket:socket closeConnection:YES];
+                    DTRACE_HTTP_END();
                     FHLOGERROR( statusCode, @"Unable to read chunked response footer headers for URL %@", [[request url] absoluteString] );
                     return errorCode;
                 }
@@ -237,6 +281,7 @@ deadSocket:
                 {
                     [hostEntry closeSocket:socket closeConnection:YES];
                     errorCode = FHErrorInternalNotImplemented;
+                    DTRACE_HTTP_END();
                     FHLOGERROR( errorCode, @"HTTP non-chunked with no content length not yet implemented - connection is now hosed!" );
                     return errorCode;
                 }
@@ -248,6 +293,7 @@ deadSocket:
                     if( errorCode != FHErrorOK )
                     {
                         [hostEntry closeSocket:socket closeConnection:YES];
+                        DTRACE_HTTP_END();
                         FHLOGERROR( errorCode, @"Unable to skip response data for URL %@", [[request url] absoluteString] );
                         return errorCode;
                     }
@@ -260,11 +306,15 @@ deadSocket:
                         // Error reading data
                         errorCode = [socket errorCode];
                         [hostEntry closeSocket:socket closeConnection:YES];
+                        DTRACE_HTTP_END();
                         FHLOGERROR( errorCode, @"Unable to read response data for URL %@", [[request url] absoluteString] );
                         return errorCode;
                     }
                 }
             }
+            
+            if( FEMTOHTTP_HTTP_CONTENT_READ_ENABLED() )
+                FEMTOHTTP_HTTP_CONTENT_READ( [content length] );
         }
         
         break;
@@ -282,20 +332,29 @@ deadSocket:
         //errorCode = FHErrorInternalNotImplemented;
         //FHLOGERROR( errorCode, @"HTTP redirects not yet implemented - connection is now hosed!" );
         //return errorCode;
+        if( FEMTOHTTP_HTTP_REDIRECT_ENABLED() )
+            FEMTOHTTP_HTTP_REDIRECT( statusCode, CSTRING( [responseHeaders objectForKey:@"location"] ) );
     }
     
     // Build response
     BOOL autoDecompress = FHHTTPRequestOptionIsSet( request, FHHTTPRequestAutoDecompress );
     if( outResponse != NULL )
+    {
         *outResponse = [[[FHHTTPResponse alloc] initWithURL:[request url]
                                                     headers:responseHeaders
                                                  statusCode:statusCode
                                                statusReason:statusReason
                                                     content:content
                                              autoDecompress:autoDecompress] autorelease];
+        
+        // Do this here so we can get the pretty data
+        if( FEMTOHTTP_HTTP_CONTENT_READ_DATA_ENABLED() )
+            FEMTOHTTP_HTTP_CONTENT_READ_DATA( CSTRING( [*outResponse contentAsString] ) );
+    }
     
     FHRELEASE( content );
     
+    DTRACE_HTTP_END();
     return FHErrorOK;
 }
 
@@ -318,10 +377,19 @@ deadSocket:
         *outStatusReason = nil;
     FHErrorCode statusCode = FHErrorOK;
     
+    if( ( isFooter == NO ) && FEMTOHTTP_HTTP_PRE_HEADER_READ_ENABLED() )
+        FEMTOHTTP_HTTP_PRE_HEADER_READ();
+    
     // If a footer, then don't try to read status line
     BOOL hasReadFirstLine = isFooter;
     NSCharacterSet* colonSet = [NSCharacterSet characterSetWithCharactersInString:@":"];
     
+    // If logging data, we need to keep it
+    NSMutableString* headerData = nil;
+    if( ( isFooter == NO ) && FEMTOHTTP_HTTP_HEADER_READ_DATA_ENABLED() )
+        headerData = [[NSMutableString alloc] init];
+    
+    NSInteger length = 0;
     while( YES )
     {
         NSString* line = [socket readLine];
@@ -336,6 +404,13 @@ deadSocket:
             // Empty line - end of header
             break;
         }
+        length += [line length];
+        if( headerData != nil )
+        {
+            // for dtrace - usually not enabled
+            [headerData appendString:line];
+            [headerData appendString:@"\n"];
+        }
         
         BOOL errorScanning = NO;
         NSScanner* scanner = [[NSScanner alloc] initWithString:line];
@@ -347,6 +422,8 @@ deadSocket:
                 [scanner scanInteger:&statusCode] )
             {
                 *outStatusReason = [[line substringFromIndex:[scanner scanLocation] + 1] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+                if( FEMTOHTTP_HTTP_HEADER_STATUS_CODE_ENABLED() )
+                    FEMTOHTTP_HTTP_HEADER_STATUS_CODE( statusCode, CSTRING( *outStatusReason ) );
             }
             else
                 errorScanning = YES;
@@ -389,6 +466,12 @@ deadSocket:
             break;
         }
     }
+    
+    if( ( isFooter == NO ) && FEMTOHTTP_HTTP_HEADER_READ_ENABLED() )
+        FEMTOHTTP_HTTP_HEADER_READ( length );
+    if( ( isFooter == NO ) && FEMTOHTTP_HTTP_HEADER_READ_DATA_ENABLED() )
+        FEMTOHTTP_HTTP_HEADER_READ_DATA( CSTRING( headerData ) );
+    FHRELEASE( headerData );
     
     return statusCode;
 }

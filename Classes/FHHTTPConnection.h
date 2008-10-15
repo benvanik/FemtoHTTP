@@ -19,7 +19,6 @@
  * Utility class for issuing HTTP commands.
  */
 @interface FHHTTPConnection : NSObject {
-
 }
 
 /*!

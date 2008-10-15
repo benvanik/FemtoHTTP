@@ -16,6 +16,8 @@
 #import <netdb.h>
 #import <poll.h>
 
+static volatile int __fh_socketIdentifier = 100;
+
 @interface FHTCPSocket (Implementation)
 - (FHErrorCode) readChunk:(NSInteger*)outBytesRead;
 - (FHErrorCode) writeChunk:(const void*)bytes length:(NSInteger)length bytesWritten:(NSInteger*)outBytesWritten;
@@ -45,12 +47,15 @@
         errorCode = FHErrorOK;
         
         buffer = [[NSMutableData alloc] initWithCapacity:2048];
+        
+        identifier = OSAtomicIncrement32( &__fh_socketIdentifier );
     }
     return self;
 }
 
 - (void) dealloc
 {
+    // buffer released in -close
     [self close];
     FHRELEASE( hostName );
     [super dealloc];
@@ -64,9 +69,20 @@
     // TODO: convert to getaddrinfo
     // http://people.redhat.com/drepper/userapi-ipv6.html
     // NOTE: getaddrinfo may be slow on the iPhone if IPv6 enabled, so don't use it???
+    
+    if( FEMTOHTTP_SOCKET_PRE_HOSTNAME_LOOKUP_ENABLED() )
+        FEMTOHTTP_SOCKET_PRE_HOSTNAME_LOOKUP( CSTRING( hostName ) );
+    
     struct hostent* host = gethostbyname( [hostName cStringUsingEncoding:NSASCIIStringEncoding] );
+    
+    if( FEMTOHTTP_SOCKET_HOSTNAME_LOOKUP_ENABLED() )
+        FEMTOHTTP_SOCKET_HOSTNAME_LOOKUP( CSTRING( hostName ) );
+    
     if( host == NULL )
     {
+        if( FEMTOHTTP_SOCKET_HOSTNAME_LOOKUP_FAILED_ENABLED() )
+            FEMTOHTTP_SOCKET_HOSTNAME_LOOKUP_FAILED( CSTRING( hostName ), h_errno );
+        
         *outHostent = NULL;
         FHErrorCode errorCode = FHErrorSocketHostNotFound;
         switch( h_errno )
@@ -107,6 +123,9 @@
 
 - (FHErrorCode) openWithHostent:(struct hostent*)host
 {
+    if( FEMTOHTTP_SOCKET_PRE_OPEN_ENABLED() )
+        FEMTOHTTP_SOCKET_PRE_OPEN( identifier, CSTRING( hostName ), port );
+    
     // NOTE: this should work with IPv6, but is untested
     struct sockaddr_in addr;
     memset( &addr, 0, sizeof( struct sockaddr_in ) );
@@ -118,6 +137,8 @@
     fd = socket( addr.sin_family, SOCK_STREAM, IPPROTO_TCP );
     if( fd < 0 )
     {
+        if( FEMTOHTTP_SOCKET_OPEN_FAILED_ENABLED() )
+            FEMTOHTTP_SOCKET_OPEN_FAILED( identifier, CSTRING( hostName ), port, errno );
         switch( errno )
         {
             default:
@@ -162,6 +183,8 @@
     int connectResult = connect( fd, ( struct sockaddr* )&addr, sizeof( struct sockaddr ) );
     if( connectResult != 0 )
     {
+        if( FEMTOHTTP_SOCKET_CONNECT_FAILED_ENABLED() )
+            FEMTOHTTP_SOCKET_CONNECT_FAILED( identifier, CSTRING( hostName ), port, errno );
         switch( errno )
         {
             default:
@@ -211,6 +234,9 @@
         return errorCode;
     }
     
+    if( FEMTOHTTP_SOCKET_OPEN_ENABLED() )
+        FEMTOHTTP_SOCKET_OPEN( identifier, CSTRING( hostName ), port );
+    
     errorCode = FHErrorOK;
     return errorCode;
 }
@@ -223,11 +249,18 @@
         return FHErrorSocketDisconnected;
     }
     
+    if( FEMTOHTTP_SOCKET_PRE_QUERYSTATUS_ENABLED() )
+        FEMTOHTTP_SOCKET_PRE_QUERYSTATUS( identifier, CSTRING( hostName ), port );
+    
     struct pollfd fds;
     fds.fd = fd;
     fds.events = POLLHUP | POLLOUT | POLLIN;
     
     int ret = poll( &fds, 1, timeout * 1000 );
+    
+    if( FEMTOHTTP_SOCKET_QUERYSTATUS_ENABLED() )
+        FEMTOHTTP_SOCKET_QUERYSTATUS( identifier, CSTRING( hostName ), port );
+    
     if( ret > 0 )
     {
         if( fds.revents & POLLHUP )
@@ -246,6 +279,8 @@
     else
     {
         // Timeout
+        if( FEMTOHTTP_SOCKET_QUERYSTATUS_FAILED_ENABLED() )
+            FEMTOHTTP_SOCKET_QUERYSTATUS_FAILED( identifier, CSTRING( hostName ), port, ret );
         [self close];
         errorCode = FHErrorSocketDisconnected;
         return errorCode;
@@ -258,7 +293,14 @@
     fds.fd = fd;
     fds.events = POLLHUP | POLLIN;
     
+    if( FEMTOHTTP_SOCKET_PRE_WAITUNTILDATAPRESENT_ENABLED() )
+        FEMTOHTTP_SOCKET_PRE_WAITUNTILDATAPRESENT( identifier, CSTRING( hostName ), port );
+    
     int ret = poll( &fds, 1, timeout * 1000 );
+    
+    if( FEMTOHTTP_SOCKET_WAITUNTILDATAPRESENT_ENABLED() )
+        FEMTOHTTP_SOCKET_WAITUNTILDATAPRESENT( identifier, CSTRING( hostName ), port );
+    
     if( ret > 0 )
     {
         if( fds.revents & POLLHUP )
@@ -277,6 +319,8 @@
     else
     {
         // Timeout
+        if( FEMTOHTTP_SOCKET_WAITUNTILDATAPRESENT_FAILED_ENABLED() )
+            FEMTOHTTP_SOCKET_WAITUNTILDATAPRESENT_FAILED( identifier, CSTRING( hostName ), port, ret );
         [self close];
         errorCode = FHErrorSocketDisconnected;
         return errorCode;
@@ -291,6 +335,8 @@
 
 - (void) close
 {
+    if( FEMTOHTTP_SOCKET_CLOSE_ENABLED() )
+        FEMTOHTTP_SOCKET_CLOSE( identifier, CSTRING( hostName ), port );
     if( fd != -1 )
     {
         close( fd );
@@ -312,13 +358,22 @@
         return errorCode;
     }
     
+    if( FEMTOHTTP_SOCKET_PRE_READCHUNK_ENABLED() )
+        FEMTOHTTP_SOCKET_PRE_READCHUNK( identifier, CSTRING( hostName ), port );
+    
     char bytes[ 1024 ];
     NSInteger bytesRead = recv( fd, bytes, sizeof( bytes ), 0 );
+    
+    if( FEMTOHTTP_SOCKET_READCHUNK_ENABLED() )
+        FEMTOHTTP_SOCKET_READCHUNK( identifier, CSTRING( hostName ), port, bytesRead );
+    
     if( outBytesRead != NULL )
         *outBytesRead = bytesRead;
     if( bytesRead == 0 )
     {
         // Disconnected
+        if( FEMTOHTTP_SOCKET_READCHUNK_FAILED_ENABLED() )
+            FEMTOHTTP_SOCKET_READCHUNK_FAILED( identifier, CSTRING( hostName ), port, 0 );
         errorCode = FHErrorSocketDisconnected;
         [self close];
 #if defined( FH_DEBUG_OUTPUT )
@@ -334,6 +389,8 @@
     }
     else
     {
+        if( FEMTOHTTP_SOCKET_READCHUNK_FAILED_ENABLED() )
+            FEMTOHTTP_SOCKET_READCHUNK_FAILED( identifier, CSTRING( hostName ), port, errno );
         switch( errno )
         {
             default:
@@ -382,7 +439,14 @@
         return errorCode;
     }
     
+    if( FEMTOHTTP_SOCKET_PRE_WRITECHUNK_ENABLED() )
+        FEMTOHTTP_SOCKET_PRE_WRITECHUNK( identifier, CSTRING( hostName ), port, length );
+    
     NSInteger bytesWritten = write( fd, bytes, length );
+    
+    if( FEMTOHTTP_SOCKET_WRITECHUNK_ENABLED() )
+        FEMTOHTTP_SOCKET_WRITECHUNK( identifier, CSTRING( hostName ), port, bytesWritten );
+    
     if( outBytesWritten != NULL )
         *outBytesWritten = bytesWritten;
     if( bytesWritten == length )
@@ -392,6 +456,8 @@
     }
     else
     {
+        if( FEMTOHTTP_SOCKET_WRITECHUNK_FAILED_ENABLED() )
+            FEMTOHTTP_SOCKET_WRITECHUNK_FAILED( identifier, CSTRING( hostName ), port, errno );
         switch( errno )
         {
             default:

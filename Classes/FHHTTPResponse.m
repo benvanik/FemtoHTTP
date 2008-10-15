@@ -72,15 +72,27 @@
         value = [headers objectForKey:@"content-encoding"];
         if( value != nil )
         {
+            BOOL needsDecompress = NO;
             if( [value caseInsensitiveCompare:FHHTTPContentEncodingGZIP] == NSOrderedSame )
+            {
                 contentEncoding = [FHHTTPContentEncodingGZIP retain];
+                needsDecompress = YES;
+            }
             else if( [value caseInsensitiveCompare:FHHTTPContentEncodingDeflate] == NSOrderedSame )
+            {
                 contentEncoding = [FHHTTPContentEncodingDeflate retain];
+                needsDecompress = YES;
+            }
             else
                 contentEncoding = [value retain];
             // Attempt to decompress - this may fail and stay in compressed form
-            if( autoDecompress == YES )
+            if( ( autoDecompress == YES ) && ( needsDecompress == YES ) )
+            {
+                if( FEMTOHTTP_RESPONSE_AUTO_DECOMPRESS_ENABLED() )
+                    FEMTOHTTP_RESPONSE_AUTO_DECOMPRESS();
                 [self decompress];
+            }
+                
         }
         else
             contentEncoding = [FHHTTPContentEncodingIdentity retain];
@@ -157,7 +169,13 @@
 {
     if( [contentEncoding isEqualToString:FHHTTPContentEncodingGZIP] == YES )
     {
-        if( ( [content length] == 0 ) || ( [self decompressGZIP] == YES ) )
+        if( FEMTOHTTP_RESPONSE_PRE_DECOMPRESS_ENABLED() )
+            FEMTOHTTP_RESPONSE_PRE_DECOMPRESS();
+        NSInteger preLength = [content length];
+        BOOL result = ( preLength == 0 ) || ( [self decompressGZIP] == YES );
+        if( FEMTOHTTP_RESPONSE_DECOMPRESS_ENABLED() )
+            FEMTOHTTP_RESPONSE_DECOMPRESS( preLength, [content length], result );
+        if( result == YES )
         {
             FHRELEASE( contentEncoding );
             contentEncoding = [FHHTTPContentEncodingIdentity retain];
@@ -168,7 +186,13 @@
     }
     else if( [contentEncoding isEqualToString:FHHTTPContentEncodingDeflate] == YES )
     {
-        if( ( [content length] == 0 ) || ( [self decompressDeflate] == YES ) )
+        if( FEMTOHTTP_RESPONSE_PRE_DECOMPRESS_ENABLED() )
+            FEMTOHTTP_RESPONSE_PRE_DECOMPRESS();
+        NSInteger preLength = [content length];
+        BOOL result = ( preLength == 0 ) || ( [self decompressDeflate] == YES );
+        if( FEMTOHTTP_RESPONSE_DECOMPRESS_ENABLED() )
+            FEMTOHTTP_RESPONSE_DECOMPRESS( preLength, [content length], result );
+        if( result == YES )
         {
             FHRELEASE( contentEncoding );
             contentEncoding = [FHHTTPContentEncodingIdentity retain];

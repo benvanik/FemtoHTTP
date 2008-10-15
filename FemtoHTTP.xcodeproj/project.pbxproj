@@ -75,6 +75,10 @@
 		900E0B7F0EA2B56800409EF8 /* FHHTTPConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 900E0B7B0EA2B56800409EF8 /* FHHTTPConnection.m */; };
 		900E0B830EA2B78500409EF8 /* FHHTTPResponse+Implementation.h in Headers */ = {isa = PBXBuildFile; fileRef = 900E0B810EA2B78500409EF8 /* FHHTTPResponse+Implementation.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		900E0B850EA2B78500409EF8 /* FHHTTPResponse+Implementation.h in Headers */ = {isa = PBXBuildFile; fileRef = 900E0B810EA2B78500409EF8 /* FHHTTPResponse+Implementation.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		90465CCB0EA5B2100091D240 /* probes.d in Sources */ = {isa = PBXBuildFile; fileRef = 90465CCA0EA5B2100091D240 /* probes.d */; };
+		90465CCC0EA5B2100091D240 /* probes.d in Sources */ = {isa = PBXBuildFile; fileRef = 90465CCA0EA5B2100091D240 /* probes.d */; };
+		90465D230EA5BD250091D240 /* probes.h in Headers */ = {isa = PBXBuildFile; fileRef = 90465D220EA5BD250091D240 /* probes.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		90465D240EA5BD250091D240 /* probes.h in Headers */ = {isa = PBXBuildFile; fileRef = 90465D220EA5BD250091D240 /* probes.h */; settings = {ATTRIBUTES = (Private, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -134,6 +138,11 @@
 		900E0B7A0EA2B56800409EF8 /* FHHTTPConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FHHTTPConnection.h; path = Classes/FHHTTPConnection.h; sourceTree = "<group>"; };
 		900E0B7B0EA2B56800409EF8 /* FHHTTPConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FHHTTPConnection.m; path = Classes/FHHTTPConnection.m; sourceTree = "<group>"; };
 		900E0B810EA2B78500409EF8 /* FHHTTPResponse+Implementation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "FHHTTPResponse+Implementation.h"; path = "Classes/FHHTTPResponse+Implementation.h"; sourceTree = "<group>"; };
+		90465CCA0EA5B2100091D240 /* probes.d */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.dtrace; path = probes.d; sourceTree = "<group>"; };
+		90465CCD0EA5B2E30091D240 /* traces.d */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.dtrace; path = traces.d; sourceTree = "<group>"; };
+		90465D220EA5BD250091D240 /* probes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = probes.h; sourceTree = "<group>"; };
+		907827C70EA5DBE700AFA164 /* traces.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = traces.sh; sourceTree = "<group>"; };
+		907829A10EA5F27300AFA164 /* traces-template.d */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.dtrace; path = "traces-template.d"; sourceTree = "<group>"; };
 		D2F7E79907B2D74100F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
@@ -180,6 +189,7 @@
 			children = (
 				08FB77AEFE84172EC02AAC07 /* Classes */,
 				32C88DFF0371C24200C91783 /* Other Sources */,
+				90465CC90EA5B1E60091D240 /* dtrace */,
 				9006BF770EA33F8C007D462D /* Test Cases */,
 				089C1665FE841158C02AAC07 /* Resources */,
 				0867D69AFE84028FC02AAC07 /* External Frameworks and Libraries */,
@@ -291,6 +301,18 @@
 			name = "Test Cases";
 			sourceTree = "<group>";
 		};
+		90465CC90EA5B1E60091D240 /* dtrace */ = {
+			isa = PBXGroup;
+			children = (
+				90465CCA0EA5B2100091D240 /* probes.d */,
+				907829A10EA5F27300AFA164 /* traces-template.d */,
+				90465CCD0EA5B2E30091D240 /* traces.d */,
+				90465D220EA5BD250091D240 /* probes.h */,
+				907827C70EA5DBE700AFA164 /* traces.sh */,
+			);
+			name = dtrace;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -311,6 +333,7 @@
 				9006BDDF0EA30ECC007D462D /* FHConstants.h in Headers */,
 				9006BE140EA30FBA007D462D /* FHHTTPRequest+Implementation.h in Headers */,
 				9006C7F10EA3B636007D462D /* FHHTTPCookie.h in Headers */,
+				90465D230EA5BD250091D240 /* probes.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -331,6 +354,7 @@
 				9006BDE10EA30ECC007D462D /* FHConstants.h in Headers */,
 				9006BE160EA30FBA007D462D /* FHHTTPRequest+Implementation.h in Headers */,
 				9006C7F30EA3B636007D462D /* FHHTTPCookie.h in Headers */,
+				90465D240EA5BD250091D240 /* probes.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -341,6 +365,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1DEB91AD08733DA50010E9CD /* Build configuration list for PBXNativeTarget "FemtoHTTP" */;
 			buildPhases = (
+				90465CCF0EA5B39E0091D240 /* Build dtrace probes */,
 				8DC2EF500486A6940098B216 /* Headers */,
 				8DC2EF520486A6940098B216 /* Resources */,
 				8DC2EF540486A6940098B216 /* Sources */,
@@ -379,6 +404,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 900E0B670EA2B4DB00409EF8 /* Build configuration list for PBXNativeTarget "FemtoHTTP-iPhone" */;
 			buildPhases = (
+				90465CD40EA5B3CC0091D240 /* Build dtrace probes */,
 				900E0B600EA2B4A900409EF8 /* Headers */,
 				900E0B610EA2B4A900409EF8 /* Sources */,
 				900E0B620EA2B4A900409EF8 /* Frameworks */,
@@ -457,6 +483,41 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "#  Build the doxygen documentation for the project and load the docset into Xcode.\n\n#  Use the following to adjust the value of the $DOXYGEN_PATH User-Defined Setting:\n#    Binary install location: /Applications/Doxygen.app/Contents/Resources/doxygen\n#    Source build install location: /usr/local/bin/doxygen\n\n#  Append the proper input/output directories and docset info to the config file.\n#  This works even though values are assigned higher up in the file. Easier than sed.\ncp $SOURCE_ROOT/Documentation/doxygen.config $TEMP_DIR/doxygen.config\necho \"OUTPUT_DIRECTORY = $SOURCE_ROOT/Documentation/DoxygenDocs.docset\" >> $TEMP_DIR/doxygen.config\n\n#  Run doxygen on the updated config file.\n#  Note: doxygen creates a Makefile that does most of the heavy lifting.\n$DOXYGEN_PATH $TEMP_DIR/doxygen.config\n\n#  Copy source\nrm -f $SOURCE_ROOT/Documentation/html/\nmkdir $SOURCE_ROOT/Documentation/html/\ncp -R $SOURCE_ROOT/Documentation/DoxygenDocs.docset/html/ $SOURCE_ROOT/Documentation/html/\n\n#  make will invoke docsetutil. Take a look at the Makefile to see how this is done.\nmake -C $SOURCE_ROOT/Documentation/DoxygenDocs.docset/html install\n\n#  Construct a temporary applescript file to tell Xcode to load a docset.\nrm -f $TEMP_DIR/loadDocSet.scpt\necho \"tell application \\\"Xcode\\\"\" >> $TEMP_DIR/loadDocSet.scpt\necho \"load documentation set with path \\\"/Users/$USER/Library/Developer/Shared/Documentation/DocSets/\\\"\" \n     >> $TEMP_DIR/loadDocSet.scpt\necho \"end tell\" >> $TEMP_DIR/loadDocSet.scpt\n#  Run the load-docset applescript command.\nosascript $TEMP_DIR/loadDocSet.scpt\n\nexit 0\n";
+			showEnvVarsInLog = 0;
+		};
+		90465CCF0EA5B39E0091D240 /* Build dtrace probes */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/probes.d",
+			);
+			name = "Build dtrace probes";
+			outputPaths = (
+				"$(SRCROOT)/probes.h",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "dtrace -h -s probes.d -o $SOURCE_ROOT/probes.h\n";
+			showEnvVarsInLog = 0;
+		};
+		90465CD40EA5B3CC0091D240 /* Build dtrace probes */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/probes.d",
+			);
+			name = "Build dtrace probes";
+			outputPaths = (
+				"$(SRCROOT)/probes.h",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "dtrace -h -s probes.d -o $SOURCE_ROOT/probes.h\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -474,6 +535,7 @@
 				9006BB6A0EA2CAB3007D462D /* FHHostEntry.m in Sources */,
 				9006BDE00EA30ECC007D462D /* FHConstants.m in Sources */,
 				9006C7F20EA3B636007D462D /* FHHTTPCookie.m in Sources */,
+				90465CCB0EA5B2100091D240 /* probes.d in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -503,6 +565,7 @@
 				9006BB6C0EA2CAB3007D462D /* FHHostEntry.m in Sources */,
 				9006BDE20EA30ECC007D462D /* FHConstants.m in Sources */,
 				9006C7F40EA3B636007D462D /* FHHTTPCookie.m in Sources */,
+				90465CCC0EA5B2100091D240 /* probes.d in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

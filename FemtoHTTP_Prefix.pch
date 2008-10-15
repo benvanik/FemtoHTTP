@@ -21,3 +21,8 @@
 #else
 #define FHLOG( fmt, ... )
 #endif
+
+#define UTF8STRING( nsstring ) ( char* )[nsstring UTF8String]
+#define CSTRING( nsstring ) ( char* )[nsstring cStringUsingEncoding:NSASCIIStringEncoding]
+
+#import "probes.h"
