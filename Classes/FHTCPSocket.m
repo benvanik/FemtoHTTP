@@ -14,6 +14,7 @@
 #import <netinet/in.h>
 #import <arpa/inet.h>
 #import <netdb.h>
+#import <poll.h>
 
 @interface FHTCPSocket (Implementation)
 - (FHErrorCode) readChunk:(NSInteger*)outBytesRead;
@@ -144,17 +145,19 @@
     // Keep-Alive enabled
     int optval = ( singleUse == NO ) ? 1 : 0;
     setsockopt( fd, SOL_SOCKET, SO_KEEPALIVE, &optval, sizeof( int ) );
+    //#define TCP_NODELAY                 0x01 
+    //int rr = setsockopt( fd, IPPROTO_TCP, TCP_NODELAY, &optval, sizeof( int ) );
     
     // Linger enabled for 5s
     // TODO: see if we want lingering
-//    struct linger lingerval;
-//    lingerval.l_onoff = 1;
-//    lingerval.l_linger = 5;
-//    setsockopt( fd, SOL_SOCKET, SO_LINGER, &lingerval, sizeof( struct linger ) );
+    //struct linger lingerval;
+    //lingerval.l_onoff = 1;
+    //lingerval.l_linger = 5;
+    //setsockopt( fd, SOL_SOCKET, SO_LINGER, &lingerval, sizeof( struct linger ) );
 
-    optval = timeout;
-    setsockopt( fd, SOL_SOCKET, SO_RCVTIMEO, &optval, sizeof( int ) );
-    setsockopt( fd, SOL_SOCKET, SO_SNDTIMEO, &optval, sizeof( int ) );
+    //optval = timeout;
+    //setsockopt( fd, SOL_SOCKET, SO_RCVTIMEO, &optval, sizeof( int ) );
+    //setsockopt( fd, SOL_SOCKET, SO_SNDTIMEO, &optval, sizeof( int ) );
     
     int connectResult = connect( fd, ( struct sockaddr* )&addr, sizeof( struct sockaddr ) );
     if( connectResult != 0 )
@@ -220,34 +223,62 @@
         return FHErrorSocketDisconnected;
     }
     
-    if( fd == -1 )
-    {
-        errorCode = FHErrorSocketDisconnected;
-        return FHErrorSocketDisconnected;
-    }
+    struct pollfd fds;
+    fds.fd = fd;
+    fds.events = POLLHUP | POLLOUT | POLLIN;
     
-    errorCode = FHErrorOK;
-    return errorCode;
+    int ret = poll( &fds, 1, timeout * 1000 );
+    if( ret > 0 )
+    {
+        if( fds.revents & POLLHUP )
+        {
+            [self close];
+            errorCode = FHErrorSocketDisconnected;
+            return errorCode;
+        }
+        else
+        {
+            // Probably valid!
+            errorCode = FHErrorOK;
+            return errorCode;
+        }
+    }
+    else
+    {
+        // Timeout
+        [self close];
+        errorCode = FHErrorSocketDisconnected;
+        return errorCode;
+    }    
 }
 
 - (FHErrorCode) waitUntilDataPresent
 {
-    struct timeval tm;
-    fd_set fds;
-    tm.tv_sec = timeout;
-    tm.tv_usec = 0;
-    FD_ZERO( &fds );
-    FD_SET( fd, &fds );
-    NSInteger n = select( fd + 1, &fds, NULL, NULL, &tm );
-    if( n <= 0 )
+    struct pollfd fds;
+    fds.fd = fd;
+    fds.events = POLLHUP | POLLIN;
+    
+    int ret = poll( &fds, 1, timeout * 1000 );
+    if( ret > 0 )
     {
-        [self close];
-        errorCode = FHErrorSocketDisconnected;
-        return errorCode;
+        if( fds.revents & POLLHUP )
+        {
+            [self close];
+            errorCode = FHErrorSocketDisconnected;
+            return errorCode;
+        }
+        else
+        {
+            // Probably valid!
+            errorCode = FHErrorOK;
+            return errorCode;
+        }
     }
     else
     {
-        errorCode = FHErrorOK;
+        // Timeout
+        [self close];
+        errorCode = FHErrorSocketDisconnected;
         return errorCode;
     }
 }
@@ -287,7 +318,12 @@
         *outBytesRead = bytesRead;
     if( bytesRead == 0 )
     {
-        errorCode = FHErrorOK;
+        // Disconnected
+        errorCode = FHErrorSocketDisconnected;
+        [self close];
+#if defined( FH_DEBUG_OUTPUT )
+        FHLOGERROR( errorCode, @"Graceful shutdown of socket %@:%d", hostName, port );
+#endif
         return errorCode;
     }
     else if( bytesRead > 0 )

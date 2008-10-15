@@ -96,4 +96,42 @@
     STAssertTrue( FHErrorIsHTTPRedirect( [response statusCode] ) == YES, @"No redirect returned" );
 }
 
+- (void) testSingleBinaryFileContentLength
+{
+    FHHTTPRequest* request = [FHHTTPRequest requestWithURL:[NSURL URLWithString:@"http://www.noxa.org/projects/phanfare/windowsclient/screenshots/WindowsClient-Albums.jpg"]];
+    FHHTTPResponse* response;
+    FHErrorCode errorCode = [FHHTTPConnection issueRequest:request returningResponse:&response];
+    STAssertEquals( errorCode, FHErrorOK, @"Error issuing request" );
+    STAssertEquals( [[response content] length], ( NSUInteger )260441, @"Content lengths differ" );
+    [[response content] writeToFile:@"testBinaryFile.jpg" atomically:YES];
+}
+
+- (void) testMultipleBinaryFileContentLength
+{
+    FHHTTPRequest* request = [FHHTTPRequest requestWithURL:[NSURL URLWithString:@"http://www.noxa.org/projects/phanfare/windowsclient/screenshots/WindowsClient-Albums.jpg"]];
+    FHHTTPResponse* response;
+    FHErrorCode errorCode = [FHHTTPConnection issueRequest:request returningResponse:&response];
+    STAssertEquals( errorCode, FHErrorOK, @"Error issuing request 1" );
+    STAssertEquals( [[response content] length], ( NSUInteger )260441, @"Content lengths differ 1" );
+    [[response content] writeToFile:@"testBinaryFile1.jpg" atomically:YES];
+    errorCode = [FHHTTPConnection issueRequest:request returningResponse:&response];
+    STAssertEquals( errorCode, FHErrorOK, @"Error issuing request 2" );
+    STAssertEquals( [[response content] length], ( NSUInteger )260441, @"Content lengths differ 2" );
+    [[response content] writeToFile:@"testBinaryFile2.jpg" atomically:YES];
+}
+
+- (void) testMultipleVETiles
+{
+    FHHTTPRequest* request = [FHHTTPRequest requestWithURL:[NSURL URLWithString:@"http://a3.ortho.tiles.virtualearth.net/tiles/a033.jpeg?g=159"]];
+    FHHTTPResponse* response;
+    FHErrorCode errorCode;
+    for( NSInteger n = 0; n < 10; n++ )
+    {
+        errorCode = [FHHTTPConnection issueRequest:request returningResponse:&response];
+        STAssertEquals( errorCode, FHErrorOK, @"Error issuing request" );
+        STAssertEquals( [[response content] length], ( NSUInteger )5255, @"Content lengths differ" );
+        [[response content] writeToFile:[NSString stringWithFormat:@"testVE%d.jpg", n] atomically:YES];
+    }
+}
+
 @end

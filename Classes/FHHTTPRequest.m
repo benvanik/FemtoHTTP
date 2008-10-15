@@ -232,7 +232,8 @@
     NSMutableString* value = [[NSMutableString alloc] init];
     
     // Opening line
-    NSString* massagedUrl = [url path]; // TODO: make absolute again (add scheme/host/port) - recommended, but not needed
+    //NSInteger port = ( [url port] != nil ) ? [[url port] integerValue] : 80;
+    NSString* massagedUrl = [url absoluteString]; // TODO: make absolute again (add scheme/host/port) - recommended, but not needed
     if( [massagedUrl length] == 0 )
         massagedUrl = @"/";
     [value appendFormat:@"%@ %@ HTTP/1.1\r\n", method, massagedUrl];
