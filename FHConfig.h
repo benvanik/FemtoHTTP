@@ -15,7 +15,7 @@
  * \def FH_DEBUG_OUTPUT
  * If defined, tons of debug spew will be produced.
  */
-#define FH_DEBUG_OUTPUT
+//#define FH_DEBUG_OUTPUT
 
 /*!
  * \def FH_DEFAULT_MAXIMUM_CONNECTIONS

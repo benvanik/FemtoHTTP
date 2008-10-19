@@ -95,7 +95,36 @@ deadSocket:
         return errorCode;
     }
     
-    // NOTE: we write the request body below, as we are waiting for a 100 Continue and need to read it first
+    // We write the request body below if we are waiting for a 100 Continue and need to read it first
+    BOOL hasSentRequestContent = NO;
+    if( ( [request content] != nil ) && ( FHHTTPRequestOptionIsSet( request, FHHTTPRequestWaitForAcknowledge ) == NO ) )
+    {
+        if( FEMTOHTTP_HTTP_PRE_CONTENT_WRITE_ENABLED() )
+            FEMTOHTTP_HTTP_PRE_CONTENT_WRITE( [[request content] length] );
+        if( FEMTOHTTP_HTTP_CONTENT_WRITE_DATA_ENABLED() )
+            FEMTOHTTP_HTTP_CONTENT_WRITE_DATA( CSTRING( [request contentAsString] ) );
+        errorCode = [socket writeData:[request content]];
+        if( FEMTOHTTP_HTTP_CONTENT_WRITE_ENABLED() )
+            FEMTOHTTP_HTTP_CONTENT_WRITE( [[request content] length] );
+        if( errorCode != FHErrorOK )
+        {
+            [hostEntry closeSocket:socket closeConnection:YES];
+            DTRACE_HTTP_END();
+            FHLOGERROR( errorCode, @"Unable to write request body for URL %@", [[request url] absoluteString] );
+            return errorCode;
+        }
+        
+        // Write trailing newline - I think this is required
+        errorCode = [socket writeNewLine];
+        if( errorCode != FHErrorOK )
+        {
+            [hostEntry closeSocket:socket closeConnection:YES];
+            DTRACE_HTTP_END();
+            FHLOGERROR( errorCode, @"Unable to write request body trailer for URL %@", [[request url] absoluteString] );
+            return errorCode;
+        }
+        hasSentRequestContent = YES;
+    }
     
     // Wait until data ready - this will fail if we are a now-closed reused connection
     errorCode = [socket waitUntilDataPresent];
@@ -129,7 +158,7 @@ deadSocket:
         if( statusCode == FHErrorHTTPContinue )
         {
             // Was waiting to write the contents, so write them!
-            if( [request content] != nil )
+            if( ( hasSentRequestContent == NO ) && ( [request content] != nil ) )
             {
                 if( FEMTOHTTP_HTTP_PRE_CONTENT_WRITE_ENABLED() )
                     FEMTOHTTP_HTTP_PRE_CONTENT_WRITE( [[request content] length] );
