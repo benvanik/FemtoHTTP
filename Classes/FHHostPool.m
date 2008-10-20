@@ -12,6 +12,8 @@
 FHHostPool*     __fh_singletonPool = nil;
 volatile int    __fh_singletonLock = 0;
 
+#define kHostPoolClearThreshold     70
+
 @implementation FHHostPool
 
 #pragma mark -
@@ -63,6 +65,11 @@ volatile int    __fh_singletonLock = 0;
     if( entry == nil )
     {
         FHPROBE( FEMTOHTTP_HOSTPOOL_ADDED, CSTRING( hostName ), port );
+        
+        // Periodically clear all the hosts
+        if( [hosts count] >= kHostPoolClearThreshold )
+            [hosts removeAllObjects];
+        
         entry = [[FHHostEntry alloc] initWithHostName:hostName andPort:port];
         [hosts setObject:entry forKey:hostKey];
     }
