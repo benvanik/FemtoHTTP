@@ -88,8 +88,7 @@
             // Attempt to decompress - this may fail and stay in compressed form
             if( ( autoDecompress == YES ) && ( needsDecompress == YES ) )
             {
-                if( FEMTOHTTP_RESPONSE_AUTO_DECOMPRESS_ENABLED() )
-                    FEMTOHTTP_RESPONSE_AUTO_DECOMPRESS();
+                FHPROBE( FEMTOHTTP_RESPONSE_AUTO_DECOMPRESS );
                 [self decompress];
             }
                 
@@ -169,12 +168,10 @@
 {
     if( [contentEncoding isEqualToString:FHHTTPContentEncodingGZIP] == YES )
     {
-        if( FEMTOHTTP_RESPONSE_PRE_DECOMPRESS_ENABLED() )
-            FEMTOHTTP_RESPONSE_PRE_DECOMPRESS();
+        FHPROBE( FEMTOHTTP_RESPONSE_PRE_DECOMPRESS );
         NSInteger preLength = [content length];
         BOOL result = ( preLength == 0 ) || ( [self decompressGZIP] == YES );
-        if( FEMTOHTTP_RESPONSE_DECOMPRESS_ENABLED() )
-            FEMTOHTTP_RESPONSE_DECOMPRESS( preLength, [content length], result );
+        FHPROBE( FEMTOHTTP_RESPONSE_DECOMPRESS, preLength, [content length], result );
         if( result == YES )
         {
             FHRELEASE( contentEncoding );
@@ -186,12 +183,10 @@
     }
     else if( [contentEncoding isEqualToString:FHHTTPContentEncodingDeflate] == YES )
     {
-        if( FEMTOHTTP_RESPONSE_PRE_DECOMPRESS_ENABLED() )
-            FEMTOHTTP_RESPONSE_PRE_DECOMPRESS();
+        FHPROBE( FEMTOHTTP_RESPONSE_PRE_DECOMPRESS );
         NSInteger preLength = [content length];
         BOOL result = ( preLength == 0 ) || ( [self decompressDeflate] == YES );
-        if( FEMTOHTTP_RESPONSE_DECOMPRESS_ENABLED() )
-            FEMTOHTTP_RESPONSE_DECOMPRESS( preLength, [content length], result );
+        FHPROBE( FEMTOHTTP_RESPONSE_DECOMPRESS, preLength, [content length], result );
         if( result == YES )
         {
             FHRELEASE( contentEncoding );

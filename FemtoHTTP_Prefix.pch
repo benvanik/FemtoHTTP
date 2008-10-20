@@ -22,6 +22,12 @@
 #define FHLOG( fmt, ... )
 #endif
 
+#if defined( FH_DTRACE )
+#define FHPROBE( probe, ... ) if( probe##_ENABLED() ){ probe( __VA_ARGS__ ); }
+#else
+#define FHPROBE( probe, ... )
+#endif
+
 #define UTF8STRING( nsstring ) ( char* )[nsstring UTF8String]
 #define CSTRING( nsstring ) ( char* )[nsstring cStringUsingEncoding:NSASCIIStringEncoding]
 

@@ -28,3 +28,11 @@
  * The default timeout (in seconds).
  */
 #define FH_DEFAULT_TIMEOUT              120
+
+/*!
+ * \def FH_DTRACE
+ * Enable dtrace probes.
+ */
+#if !defined( TARGET_OS_IPHONE ) || ( TARGET_OS_IPHONE == 0 )
+#define FH_DTRACE
+#endif

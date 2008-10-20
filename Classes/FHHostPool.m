@@ -62,8 +62,7 @@ volatile int    __fh_singletonLock = 0;
     FHHostEntry* entry = [[hosts objectForKey:hostKey] retain];
     if( entry == nil )
     {
-        if( FEMTOHTTP_HOSTPOOL_ADDED_ENABLED() )
-            FEMTOHTTP_HOSTPOOL_ADDED( CSTRING( hostName ), port );
+        FHPROBE( FEMTOHTTP_HOSTPOOL_ADDED, CSTRING( hostName ), port );
         entry = [[FHHostEntry alloc] initWithHostName:hostName andPort:port];
         [hosts setObject:entry forKey:hostKey];
     }
