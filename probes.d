@@ -70,6 +70,8 @@ provider femtohttp {
     
     /* needed to retry a socket (was idle and dead, so need to get another) */
     probe http__socket__retry();
+    /* needed to retry a socket (was new, but read after write failed) */
+    probe http__socket__aggressive__retry();
     
     /* wrote header */
     probe http__pre__header__write(int /*length*/);

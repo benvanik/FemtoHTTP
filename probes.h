@@ -223,6 +223,14 @@ extern "C" {
 } 
 #define	FEMTOHTTP_HTTP_REDIRECT_ENABLED() \
 	__dtrace_isenabled$femtohttp$http__redirect$v1()
+#define	FEMTOHTTP_HTTP_SOCKET_AGGRESSIVE_RETRY() \
+{ \
+	__asm__ volatile(".reference " FEMTOHTTP_TYPEDEFS); \
+	__dtrace_probe$femtohttp$http__socket__aggressive__retry$v1(); \
+	__asm__ volatile(".reference " FEMTOHTTP_STABILITY); \
+} 
+#define	FEMTOHTTP_HTTP_SOCKET_AGGRESSIVE_RETRY_ENABLED() \
+	__dtrace_isenabled$femtohttp$http__socket__aggressive__retry$v1()
 #define	FEMTOHTTP_HTTP_SOCKET_RETRY() \
 { \
 	__asm__ volatile(".reference " FEMTOHTTP_TYPEDEFS); \
@@ -477,6 +485,8 @@ extern void __dtrace_probe$femtohttp$http__pre__header__write$v1$696e74(int);
 extern int __dtrace_isenabled$femtohttp$http__pre__header__write$v1(void);
 extern void __dtrace_probe$femtohttp$http__redirect$v1$696e74$63686172202a(int, char *);
 extern int __dtrace_isenabled$femtohttp$http__redirect$v1(void);
+extern void __dtrace_probe$femtohttp$http__socket__aggressive__retry$v1(void);
+extern int __dtrace_isenabled$femtohttp$http__socket__aggressive__retry$v1(void);
 extern void __dtrace_probe$femtohttp$http__socket__retry$v1(void);
 extern int __dtrace_isenabled$femtohttp$http__socket__retry$v1(void);
 extern void __dtrace_probe$femtohttp$http__using__socket$v1$696e74(int);

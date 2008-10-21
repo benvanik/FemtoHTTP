@@ -54,8 +54,13 @@ typedef enum {
      * If you know you will be sending small packets, set this flag to reduce latency.
      */
     FHHTTPRequestWaitForAcknowledge = 0x20,
+    /*! \brief Aggressively retry failed connections.
+     * \detail If a connection was just opened but reports closure, retry a few times. This is great with
+     * crap services like Silverlight Streaming...
+     */
+    FHHTTPRequestAgressiveRetry     = 0x40,
     
-    FHHTTPRequestDefaultOptions     = FHHTTPRequestAllowCompression | FHHTTPRequestAutoDecompress | FHHTTPRequestWaitForAcknowledge,
+    FHHTTPRequestDefaultOptions     = FHHTTPRequestAllowCompression | FHHTTPRequestAutoDecompress | FHHTTPRequestWaitForAcknowledge | FHHTTPRequestAgressiveRetry,
 } FHHTTPRequestOptions;
 
 #define FHHTTPRequestOptionIsSet( request, option ) ( ( [request options] & option ) == option )

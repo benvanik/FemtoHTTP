@@ -322,7 +322,11 @@ femtohttp$1:::http-using-socket /self->handlingUrl/ {
  */
 femtohttp$1:::http-socket-retry /self->handlingUrl/ {
 }
-
+/* needed to retry a socket (was new, but read after write failed)
+ * no args
+ */
+femtohttp$1:::http-socket-aggressive-retry /self->handlingUrl/ {
+}
 
 
 

@@ -30,6 +30,12 @@
 #define FH_DEFAULT_TIMEOUT              120
 
 /*!
+ * \def FH_AGGRESSIVE_RETRY_COUNT
+ * When aggressive retry is enabled, try to reconnect this many times.
+ */
+#define FH_AGGRESSIVE_RETRY_COUNT       3
+
+/*!
  * \def FH_DTRACE
  * Enable dtrace probes.
  */

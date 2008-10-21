@@ -49,6 +49,7 @@
     // -- destination for when a socket is dead (only if the socket was idle)
 deadSocket:
     errorCode = FHErrorOK;
+    NSInteger retryCount = 0;
     
     // Build headers
     // NOTE: the result is retained, not autoreleased so that we can free it as soon as possible
@@ -128,6 +129,19 @@ deadSocket:
             FHLOG( @"waitUntilDataPresent killed bad idle socket - retrying" );
             goto deadSocket;
         }
+        
+        if( errorCode == FHErrorSocketDisconnected )
+        {
+            // If allowed, retry a few times
+            if( ( FHHTTPRequestOptionIsSet( request, FHHTTPRequestAgressiveRetry ) == YES ) && ( retryCount < FH_AGGRESSIVE_RETRY_COUNT ) )
+            {
+                FHPROBE( FEMTOHTTP_HTTP_SOCKET_AGGRESSIVE_RETRY );
+                FHLOG( @"waitUntilDataPresent killed bad new socket, aggressively retrying" );
+                retryCount++;
+                goto deadSocket;
+            }
+        }
+        
         FHPROBE( FEMTOHTTP_HTTP_END );
         FHLOGERROR( errorCode, @"Error waiting for data for URL %@", [[request url] absoluteString] );
         return errorCode;
