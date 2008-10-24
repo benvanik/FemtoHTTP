@@ -83,8 +83,11 @@
                     {
                         // Socket is closed/etc - need a new one!
                         FHPROBE( FEMTOHTTP_HOST_KILLED_IDLE, socket->identifier, CSTRING( hostName ), port );
-                        [openedSockets removeObject:socket];
+                        [lock lock];
+                        if( [openedSockets containsObject:socket] == YES )
+                            [openedSockets removeObject:socket];
                         FHRELEASE( socket );
+                        [lock unlock];
                     }
                     else if( outWasReused != NULL )
                         *outWasReused = YES;
