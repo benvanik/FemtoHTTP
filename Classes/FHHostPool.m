@@ -9,8 +9,8 @@
 #import "FHHostPool.h"
 #import "FHHostEntry.h"
 
-FHHostPool*     __fh_singletonPool = nil;
-volatile int    __fh_singletonLock = 0;
+volatile FHHostPool*    __fh_singletonPool = nil;
+volatile int            __fh_singletonLock = 0;
 
 #define kHostPoolClearThreshold     70
 
@@ -41,10 +41,10 @@ volatile int    __fh_singletonLock = 0;
     if( OSAtomicCompareAndSwapInt( 0, 1, &__fh_singletonLock ) == NO )
     {
         while( __fh_singletonPool == nil );
-        return __fh_singletonPool;
+        return ( FHHostPool* )__fh_singletonPool;
     }
     __fh_singletonPool = [[FHHostPool alloc] init];
-    return __fh_singletonPool;
+    return ( FHHostPool* )__fh_singletonPool;
 }
 
 #pragma mark -
