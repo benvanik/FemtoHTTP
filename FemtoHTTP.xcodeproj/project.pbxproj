@@ -75,6 +75,10 @@
 		900E0B7F0EA2B56800409EF8 /* FHHTTPConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 900E0B7B0EA2B56800409EF8 /* FHHTTPConnection.m */; };
 		900E0B830EA2B78500409EF8 /* FHHTTPResponse+Implementation.h in Headers */ = {isa = PBXBuildFile; fileRef = 900E0B810EA2B78500409EF8 /* FHHTTPResponse+Implementation.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		900E0B850EA2B78500409EF8 /* FHHTTPResponse+Implementation.h in Headers */ = {isa = PBXBuildFile; fileRef = 900E0B810EA2B78500409EF8 /* FHHTTPResponse+Implementation.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		90222B9D0ECFE65C00DEEE42 /* FHSharedObjects.h in Headers */ = {isa = PBXBuildFile; fileRef = 90222B9B0ECFE65C00DEEE42 /* FHSharedObjects.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		90222B9E0ECFE65C00DEEE42 /* FHSharedObjects.m in Sources */ = {isa = PBXBuildFile; fileRef = 90222B9C0ECFE65C00DEEE42 /* FHSharedObjects.m */; };
+		90222B9F0ECFE65C00DEEE42 /* FHSharedObjects.h in Headers */ = {isa = PBXBuildFile; fileRef = 90222B9B0ECFE65C00DEEE42 /* FHSharedObjects.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		90222BA00ECFE65C00DEEE42 /* FHSharedObjects.m in Sources */ = {isa = PBXBuildFile; fileRef = 90222B9C0ECFE65C00DEEE42 /* FHSharedObjects.m */; };
 		90465CCB0EA5B2100091D240 /* probes.d in Sources */ = {isa = PBXBuildFile; fileRef = 90465CCA0EA5B2100091D240 /* probes.d */; };
 		90465CCC0EA5B2100091D240 /* probes.d in Sources */ = {isa = PBXBuildFile; fileRef = 90465CCA0EA5B2100091D240 /* probes.d */; };
 		90465D230EA5BD250091D240 /* probes.h in Headers */ = {isa = PBXBuildFile; fileRef = 90465D220EA5BD250091D240 /* probes.h */; settings = {ATTRIBUTES = (Private, ); }; };
@@ -138,6 +142,8 @@
 		900E0B7A0EA2B56800409EF8 /* FHHTTPConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FHHTTPConnection.h; path = Classes/FHHTTPConnection.h; sourceTree = "<group>"; };
 		900E0B7B0EA2B56800409EF8 /* FHHTTPConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FHHTTPConnection.m; path = Classes/FHHTTPConnection.m; sourceTree = "<group>"; };
 		900E0B810EA2B78500409EF8 /* FHHTTPResponse+Implementation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "FHHTTPResponse+Implementation.h"; path = "Classes/FHHTTPResponse+Implementation.h"; sourceTree = "<group>"; };
+		90222B9B0ECFE65C00DEEE42 /* FHSharedObjects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FHSharedObjects.h; path = Classes/FHSharedObjects.h; sourceTree = "<group>"; };
+		90222B9C0ECFE65C00DEEE42 /* FHSharedObjects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FHSharedObjects.m; path = Classes/FHSharedObjects.m; sourceTree = "<group>"; };
 		90465CCA0EA5B2100091D240 /* probes.d */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.dtrace; path = probes.d; sourceTree = "<group>"; };
 		90465CCD0EA5B2E30091D240 /* traces.d */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.dtrace; path = traces.d; sourceTree = "<group>"; };
 		90465D220EA5BD250091D240 /* probes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = probes.h; sourceTree = "<group>"; };
@@ -231,6 +237,8 @@
 				900E0B6E0EA2B54000409EF8 /* FHHTTPResponse.h */,
 				900E0B810EA2B78500409EF8 /* FHHTTPResponse+Implementation.h */,
 				900E0B6F0EA2B54000409EF8 /* FHHTTPResponse.m */,
+				90222B9B0ECFE65C00DEEE42 /* FHSharedObjects.h */,
+				90222B9C0ECFE65C00DEEE42 /* FHSharedObjects.m */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -334,6 +342,7 @@
 				9006BE140EA30FBA007D462D /* FHHTTPRequest+Implementation.h in Headers */,
 				9006C7F10EA3B636007D462D /* FHHTTPCookie.h in Headers */,
 				90465D230EA5BD250091D240 /* probes.h in Headers */,
+				90222B9F0ECFE65C00DEEE42 /* FHSharedObjects.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -355,6 +364,7 @@
 				9006BE160EA30FBA007D462D /* FHHTTPRequest+Implementation.h in Headers */,
 				9006C7F30EA3B636007D462D /* FHHTTPCookie.h in Headers */,
 				90465D240EA5BD250091D240 /* probes.h in Headers */,
+				90222B9D0ECFE65C00DEEE42 /* FHSharedObjects.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -536,6 +546,7 @@
 				9006BDE00EA30ECC007D462D /* FHConstants.m in Sources */,
 				9006C7F20EA3B636007D462D /* FHHTTPCookie.m in Sources */,
 				90465CCB0EA5B2100091D240 /* probes.d in Sources */,
+				90222BA00ECFE65C00DEEE42 /* FHSharedObjects.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -566,6 +577,7 @@
 				9006BDE20EA30ECC007D462D /* FHConstants.m in Sources */,
 				9006C7F40EA3B636007D462D /* FHHTTPCookie.m in Sources */,
 				90465CCC0EA5B2100091D240 /* probes.d in Sources */,
+				90222B9E0ECFE65C00DEEE42 /* FHSharedObjects.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

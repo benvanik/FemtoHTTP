@@ -9,6 +9,7 @@
 #import "FHHTTPRequest.h"
 #import "FHHTTPRequest+Implementation.h"
 #import "FHHTTPCookie.h"
+#import "FHSharedObjects.h"
 
 @implementation FHHTTPRequest
 
@@ -43,10 +44,6 @@
         
         options = FHHTTPRequestDefaultOptions;
         timeout = FH_DEFAULT_TIMEOUT;
-        
-        dateFormatter = [[NSDateFormatter alloc] init];
-        [dateFormatter setDateFormat:@"EEE, dd MMM yyyy HH:mm:ss zzz"];
-        [dateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
     }
     return self;
 }
@@ -69,7 +66,6 @@
 
 - (void) dealloc
 {
-    FHRELEASE( dateFormatter );
     FHRELEASE( url );
     FHRELEASE( method );
     FHRELEASE( headers );
@@ -190,7 +186,10 @@
 {
     NSString* value = [headers objectForKey:@"If-Modified-Since"];
     if( value != nil )
+    {
+        NSDateFormatter* dateFormatter = [FHSharedObjects dateFormatter];
         return [dateFormatter dateFromString:[value stringByReplacingOccurrencesOfString:@"-" withString:@" "]];
+    }
     else
         return nil;
 }
@@ -199,6 +198,7 @@
 {
     if( value != nil )
     {
+        NSDateFormatter* dateFormatter = [FHSharedObjects dateFormatter];
         NSString* string = [dateFormatter stringFromDate:value];
         [headers setObject:string forKey:@"If-Modified-Since"];
     }

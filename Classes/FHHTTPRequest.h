@@ -78,8 +78,6 @@ typedef enum {
     
     FHHTTPRequestOptions    options;
     NSInteger               timeout;
-    
-    NSDateFormatter*        dateFormatter;
 }
 
 /*!

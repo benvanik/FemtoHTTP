@@ -134,17 +134,17 @@
     }
 }
 
-- (void) testBackToBackCloseConnection
-{
-    FHHTTPRequest* request = [FHHTTPRequest requestWithURL:[NSURL URLWithString:@"http://msbluelight-0.agappdom.net/e1/d/20718/12303039/63360165600/0.31mkYDwrTc9Hsd_0CuOgEtt26yA/GeneratedImages/dzc_output_images/targetimage3%20mosaic03x03.xml"]];
-    FHHTTPResponse* response;
-    for( NSInteger n = 0; n < 100; n++ )
-    {
-        FHErrorCode errorCode = [FHHTTPConnection issueRequest:request returningResponse:&response];
-        STAssertEquals( errorCode, FHErrorOK, @"Error issuing request %d", n );
-        STAssertEquals( [[response content] length], ( NSUInteger )183, @"Content lengths differ %d", n );
-        NSLog( @"%d", n );
-    }
-}
+//- (void) testBackToBackCloseConnection
+//{
+//    FHHTTPRequest* request = [FHHTTPRequest requestWithURL:[NSURL URLWithString:@"http://msbluelight-0.agappdom.net/e1/d/20718/12303039/63360165600/0.31mkYDwrTc9Hsd_0CuOgEtt26yA/GeneratedImages/dzc_output_images/targetimage3%20mosaic03x03.xml"]];
+//    FHHTTPResponse* response;
+//    for( NSInteger n = 0; n < 100; n++ )
+//    {
+//        FHErrorCode errorCode = [FHHTTPConnection issueRequest:request returningResponse:&response];
+//        STAssertEquals( errorCode, FHErrorOK, @"Error issuing request %d", n );
+//        STAssertEquals( [[response content] length], ( NSUInteger )183, @"Content lengths differ %d", n );
+//        NSLog( @"%d", n );
+//    }
+//}
 
 @end

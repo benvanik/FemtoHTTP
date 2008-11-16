@@ -11,6 +11,7 @@
 
 #import "FHHTTPResponse.h"
 #import "FHHTTPCookie.h"
+#import "FHSharedObjects.h"
 #import <zlib.h>
 
 @interface FHHTTPResponse (Implementation)
@@ -55,16 +56,17 @@
         statusReason = [_statusReason retain];
         content = [_content retain];
         
-        // TODO: shared dateFormatter? NOTE: NSDateFormatter is NOT thread safe! Not sure anything can be done...
-        NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
-        [dateFormatter setDateFormat:@"EEE, dd MMM yyyy HH:mm:ss zzz"];
-        [dateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
-        
         // Pull out interesting header bits
         id value = [headers objectForKey:@"location"];
         location = ( value == nil ) ? nil : [value retain];
         value = [headers objectForKey:@"last-modified"];
-        lastModified = ( value == nil ) ? nil : [[dateFormatter dateFromString:[value stringByReplacingOccurrencesOfString:@"-" withString:@" "]] retain];
+        if( value != nil )
+        {
+            NSDateFormatter* dateFormatter = [FHSharedObjects dateFormatter];
+            lastModified = [[dateFormatter dateFromString:[value stringByReplacingOccurrencesOfString:@"-" withString:@" "]] retain];
+        }
+        else
+            lastModified = nil;
         value = [headers objectForKey:@"content-type"];
         contentType = ( value == nil ) ? nil : [value retain];
         
@@ -107,8 +109,6 @@
                 [cookieArray addObject:[FHHTTPCookie cookieWithHTTPCookie:cookie]];
         }
         cookies = cookieArray;
-        
-        FHRELEASE( dateFormatter );
     }
     return self;
 }

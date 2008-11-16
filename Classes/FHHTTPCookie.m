@@ -7,6 +7,7 @@
 //
 
 #import "FHHTTPCookie.h"
+#import "FHSharedObjects.h"
 
 @implementation FHHTTPCookie
 
@@ -69,11 +70,8 @@
             NSString* leftSideLower = [leftSide lowercaseString];
             if( [leftSideLower isEqualToString:@"expires"] == YES )
             {
-                NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
-                [dateFormatter setDateFormat:@"EEE, dd MMM yyyy HH:mm:ss zzz"];
-                [dateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
+                NSDateFormatter* dateFormatter = [FHSharedObjects dateFormatter];
                 expires = [[dateFormatter dateFromString:[rightSide stringByReplacingOccurrencesOfString:@"-" withString:@" "]] retain];
-                FHRELEASE( dateFormatter );
             }
             else if( [leftSideLower isEqualToString:@"path"] == YES )
                 path = [rightSide retain];
