@@ -35,6 +35,7 @@
 - (FHTCPSocket*) openSocket:(BOOL)allowReuse errorCode:(FHErrorCode*)outErrorCode wasReused:(BOOL*)outWasReused;
 - (void) closeSocket:(FHTCPSocket*)socket closeConnection:(BOOL)closeConnection;
 
+- (void) closeDeadConnections;
 - (void) closeAllConnections;
 
 @end

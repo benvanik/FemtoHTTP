@@ -172,6 +172,32 @@
     }
 }
 
+- (void) closeDeadConnections
+{
+    [lock lock];
+    for( FHTCPSocket* socket in idleSockets )
+    {
+        [socket retain];
+        [idleSockets removeObject:socket];
+        [lock unlock];
+        if( [socket queryStatus] != FHErrorOK )
+        {
+            // Socket is closed/etc - need a new one!
+            FHPROBE( FEMTOHTTP_HOST_KILLED_IDLE, socket->identifier, CSTRING( hostName ), port );
+            [lock lock];
+            if( [openedSockets containsObject:socket] == YES )
+                [openedSockets removeObject:socket];
+            [socket release];
+            continue;
+        }
+        [lock lock];
+        [idleSockets addObject:socket];
+        [socket release];
+    }
+    [lock broadcast];
+    [lock unlock];
+}
+
 - (void) closeAllConnections
 {
     [lock lock];

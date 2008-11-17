@@ -13,6 +13,7 @@
 @interface FHHostPool : NSObject {
     NSLock*                 lock;
     NSMutableDictionary*    hosts;
+    NSTimer*                timer;
 }
 
 + (FHHostPool*) sharedHostPool;

@@ -13,6 +13,7 @@ volatile FHHostPool*    __fh_singletonPool = nil;
 volatile int            __fh_singletonLock = 0;
 
 #define kHostPoolClearThreshold     70
+#define kHostPoolCleanupTimer       30.0
 
 @implementation FHHostPool
 
@@ -25,12 +26,15 @@ volatile int            __fh_singletonLock = 0;
     {
         lock = [[NSLock alloc] init];
         hosts = [[NSMutableDictionary alloc] init];
+        timer = [[NSTimer scheduledTimerWithTimeInterval:kHostPoolCleanupTimer target:self selector:@selector( timerFired: ) userInfo:nil repeats:YES] retain];
     }
     return self;
 }
 
 - (void) dealloc
 {
+    [timer invalidate];
+    timer = nil;
     FHRELEASE( hosts );
     FHRELEASE( lock );
     [super dealloc];
@@ -82,6 +86,18 @@ volatile int            __fh_singletonLock = 0;
     [lock lock];
     [hosts removeAllObjects];
     [lock unlock];
+}
+
+#pragma mark -
+#pragma mark Management
+
+- (void) timerFired:(id)state
+{
+    [lock lock];
+    NSArray* entries = [[hosts allValues] copy];
+    [lock unlock];
+    for( FHHostEntry* entry in entries )
+        [entry closeDeadConnections];
 }
 
 @end

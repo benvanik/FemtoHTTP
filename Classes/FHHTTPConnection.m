@@ -325,16 +325,19 @@ deadSocket:
                 }
                 else
                 {
-                    content = [[socket readData:contentLength] retain];
-                    if( content == nil )
+                    NSMutableData* data = [[NSMutableData alloc] initWithCapacity:contentLength];
+                    errorCode = [socket readIntoData:data length:contentLength];
+                    if( errorCode != FHErrorOK )
                     {
                         // Error reading data
-                        errorCode = [socket errorCode];
+                        FHRELEASE( data );
                         [hostEntry closeSocket:socket closeConnection:YES];
                         FHPROBE( FEMTOHTTP_HTTP_END );
                         FHLOGERROR( errorCode, @"Unable to read response data for URL %@", [[request url] absoluteString] );
                         return errorCode;
                     }
+                    else
+                        content = data;
                 }
             }
             
