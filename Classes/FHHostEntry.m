@@ -175,11 +175,12 @@
 - (void) closeDeadConnections
 {
     [lock lock];
-    for( FHTCPSocket* socket in idleSockets )
+    NSArray* idleSocketList = [idleSockets copy];
+    for( FHTCPSocket* socket in idleSocketList )
     {
-        [socket retain];
         [idleSockets removeObject:socket];
         [lock unlock];
+        // NOTE: all this mess so that we do this queryStatus outside of a lock
         if( [socket queryStatus] != FHErrorOK )
         {
             // Socket is closed/etc - need a new one!
@@ -187,12 +188,10 @@
             [lock lock];
             if( [openedSockets containsObject:socket] == YES )
                 [openedSockets removeObject:socket];
-            [socket release];
             continue;
         }
         [lock lock];
         [idleSockets addObject:socket];
-        [socket release];
     }
     [lock broadcast];
     [lock unlock];
